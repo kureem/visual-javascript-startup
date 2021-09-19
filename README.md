@@ -18,6 +18,7 @@ Please visit https://github.com/kureem/visual-javascript-engine for more informa
 > git clone https://github.com/kureem/visual-javascript-startup.git
 
 > mvn clean install
+
 ```
 
 To generate the javascript file
@@ -28,6 +29,7 @@ mvn generate-sources
 ```
 
 Run the command below for hot transpilation as convenience. This will watch for changes in source code and transpile it automatically.
+
 ```bash
 mvn jsweet:watch
 
@@ -131,24 +133,3 @@ public class Example_0 extends JSContainer {
 
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

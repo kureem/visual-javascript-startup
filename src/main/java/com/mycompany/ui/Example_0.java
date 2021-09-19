@@ -6,12 +6,17 @@ import framework.components.api.EventListener;
 import framework.components.api.Renderable;
 import jsweet.dom.Event;
 
+/**
+ * 
+ * Simple class that extends JSContainer with tag div
+ *
+ */
 public class Example_0 extends JSContainer {
 
 	public Example_0() {
 		super("div");
 
-
+ 
 		// instantiate a container with tag h1
 		JSContainer h1 = new JSContainer("h1");
 

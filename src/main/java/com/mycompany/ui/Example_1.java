@@ -14,7 +14,7 @@ public class Example_1 extends JSContainer {
 
 	public Example_1() {
 		super("div");
-
+ 
 
 		JSContainer eventLogs = new JSContainer("eventLogs", "div");
 		addChild(eventLogs);
