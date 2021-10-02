@@ -4,11 +4,28 @@ declare namespace com.mycompany.ui {
     }
 }
 declare namespace com.mycompany.ui {
+    /**
+     *
+     * Simple class that extends JSContainer with tag div
+     * @class
+     * @extends JSContainer
+     */
     class Example_0 extends JSContainer {
         constructor();
     }
     namespace Example_0 {
         class Example_0$0 implements api.EventListener {
+            private h1;
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any, h1: any);
+        }
+        class Example_0$1 implements api.EventListener {
             private h1;
             __parent: any;
             /**

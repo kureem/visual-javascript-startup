@@ -2,12 +2,12 @@ package com.mycompany.ui;
 
 import static jsweet.dom.Globals.console;
 
-import framework.components.Button;
 import framework.components.CardLayout;
 import framework.components.CardLayoutItem;
 import framework.components.JSContainer;
 import framework.components.api.EventListener;
 import framework.components.api.Renderable;
+import framework.components.input.JSButton;
 import jsweet.dom.Event;
 
 public class Example_1 extends JSContainer {
@@ -25,10 +25,10 @@ public class Example_1 extends JSContainer {
 		JSContainer buttons = new JSContainer("div");
 		addChild(buttons);
 
-		Button first = new Button("first", "<<");
-		Button previous = new Button("previous", "<");
-		Button next = new Button("next", ">");
-		Button last = new Button("last", ">>");
+		JSButton first = new JSButton("first", "<<");
+		JSButton previous = new JSButton("previous", "<");
+		JSButton next = new JSButton("next", ">");
+		JSButton last = new JSButton("last", ">>");
 
 		buttons.addChild(first).addChild(previous).addChild(next).addChild(last);
 		first.addEventListener(new EventListener() {

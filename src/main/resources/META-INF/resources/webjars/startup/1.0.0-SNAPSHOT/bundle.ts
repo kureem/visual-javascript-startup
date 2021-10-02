@@ -12,14 +12,21 @@ namespace com.mycompany.ui {
 
 }
 namespace com.mycompany.ui {
+    /**
+     * 
+     * Simple class that extends JSContainer with tag div
+     * @class
+     * @extends JSContainer
+     */
     export class Example_0 extends JSContainer {
         public constructor() {
             super("div");
             const h1: JSContainer = new JSContainer("h1");
             h1.setHtml("Hello World!");
             this.addChild(h1);
-            const btn: Button = new Button("button", "Click Me");
+            const btn: input.JSButton = new input.JSButton("button", "Click Me");
             btn.addEventListener(new Example_0.Example_0$0(this, h1), "click");
+            btn.addEventListener(new Example_0.Example_0$1(this, h1), "dblclick");
             this.addChild(btn);
         }
     }
@@ -48,6 +55,25 @@ namespace com.mycompany.ui {
         Example_0$0["__interfaces"] = ["framework.components.api.EventListener"];
 
 
+
+        export class Example_0$1 implements api.EventListener {
+            public __parent: any;
+            /**
+             * 
+             * @param {*} source
+             * @param {Event} evt
+             */
+            public performAction(source: api.Renderable, evt: Event) {
+                this.h1.setHtml("dbl click!!");
+            }
+
+            constructor(__parent: any, private h1: any) {
+                this.__parent = __parent;
+            }
+        }
+        Example_0$1["__interfaces"] = ["framework.components.api.EventListener"];
+
+
     }
 
 }
@@ -61,10 +87,10 @@ namespace com.mycompany.ui {
             this.addChild(cardLayout);
             const buttons: JSContainer = new JSContainer("div");
             this.addChild(buttons);
-            const first: Button = new Button("first", "<<");
-            const previous: Button = new Button("previous", "<");
-            const next: Button = new Button("next", ">");
-            const last: Button = new Button("last", ">>");
+            const first: input.JSButton = new input.JSButton("first", "<<");
+            const previous: input.JSButton = new input.JSButton("previous", "<");
+            const next: input.JSButton = new input.JSButton("next", ">");
+            const last: input.JSButton = new input.JSButton("last", ">>");
             buttons.addChild(first).addChild(previous).addChild(next).addChild(last);
             first.addEventListener(new Example_1.Example_1$0(this, cardLayout), "click");
             previous.addEventListener(new Example_1.Example_1$1(this, cardLayout), "click");
