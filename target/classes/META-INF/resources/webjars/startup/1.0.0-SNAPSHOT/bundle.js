@@ -23,14 +23,101 @@ var com;
     (function (mycompany) {
         var ui;
         (function (ui) {
+            class CardLayoutExample extends JSContainer {
+                constructor() {
+                    super("layout example", "div");
+                    this.layout = new CardLayout("layout", "div");
+                    this.item1 = new CardLayoutItem("item1", "div");
+                    this.item2 = new CardLayoutItem("item2", "div");
+                    this.item3 = new CardLayoutItem("item3", "div");
+                    this.testInvalid = false;
+                    this.item1.addChild(new JSContainer("h1").setHtml("Card Layout Item 1"));
+                    this.item2.addChild(new JSContainer("h1").setHtml("Card Layout Item 2"));
+                    this.item3.addChild(new JSContainer("h1").setHtml("Card Layout Item 3"));
+                    this.layout.addItem(this.item1).addItem(this.item2).addItem(this.item3);
+                    const onActivate = new CardLayoutExample.CardLayoutExample$0(this);
+                    const onDeactivate = new CardLayoutExample.CardLayoutExample$1(this);
+                    const onValidate = new CardLayoutExample.CardLayoutExample$2(this);
+                    this.item1.addEventListener(onActivate, "activate").addEventListener(onDeactivate, "deactivate");
+                    this.item2.addEventListener(onActivate, "activate").addEventListener(onDeactivate, "deactivate");
+                    this.item3.addEventListener(onActivate, "activate").addEventListener(onDeactivate, "deactivate");
+                }
+            }
+            ui.CardLayoutExample = CardLayoutExample;
+            CardLayoutExample["__class"] = "com.mycompany.ui.CardLayoutExample";
+            CardLayoutExample["__interfaces"] = ["framework.components.api.Renderable"];
+            (function (CardLayoutExample) {
+                class CardLayoutExample$0 {
+                    constructor(__parent) {
+                        this.__parent = __parent;
+                    }
+                    /**
+                     *
+                     * @param {*} source
+                     * @param {Event} evt
+                     */
+                    performAction(source, evt) {
+                        source.addChild(new JSContainer("h3").setHtml(source.getName() + " is activated"));
+                    }
+                }
+                CardLayoutExample.CardLayoutExample$0 = CardLayoutExample$0;
+                CardLayoutExample$0["__interfaces"] = ["framework.components.api.EventListener"];
+                class CardLayoutExample$1 {
+                    constructor(__parent) {
+                        this.__parent = __parent;
+                    }
+                    /**
+                     *
+                     * @param {*} source
+                     * @param {Event} evt
+                     */
+                    performAction(source, evt) {
+                        source.addChild(new JSContainer("h3").setHtml(source.getName() + " was deactivated"));
+                    }
+                }
+                CardLayoutExample.CardLayoutExample$1 = CardLayoutExample$1;
+                CardLayoutExample$1["__interfaces"] = ["framework.components.api.EventListener"];
+                class CardLayoutExample$2 {
+                    constructor(__parent) {
+                        this.__parent = __parent;
+                    }
+                    /**
+                     *
+                     * @param {*} source
+                     * @param {Event} evt
+                     */
+                    performAction(source, evt) {
+                        if (this.__parent.testInvalid) {
+                            evt["valid"] = false;
+                        }
+                    }
+                }
+                CardLayoutExample.CardLayoutExample$2 = CardLayoutExample$2;
+                CardLayoutExample$2["__interfaces"] = ["framework.components.api.EventListener"];
+            })(CardLayoutExample = ui.CardLayoutExample || (ui.CardLayoutExample = {}));
+        })(ui = mycompany.ui || (mycompany.ui = {}));
+    })(mycompany = com.mycompany || (com.mycompany = {}));
+})(com || (com = {}));
+(function (com) {
+    var mycompany;
+    (function (mycompany) {
+        var ui;
+        (function (ui) {
+            /**
+             *
+             * Simple class that extends JSContainer with tag div
+             * @class
+             * @extends JSContainer
+             */
             class Example_0 extends JSContainer {
                 constructor() {
                     super("div");
                     const h1 = new JSContainer("h1");
                     h1.setHtml("Hello World!");
                     this.addChild(h1);
-                    const btn = new Button("button", "Click Me");
+                    const btn = new input.JSButton("button", "Click Me");
                     btn.addEventListener(new Example_0.Example_0$0(this, h1), "click");
+                    btn.addEventListener(new Example_0.Example_0$1(this, h1), "dblclick");
                     this.addChild(btn);
                 }
             }
@@ -54,6 +141,22 @@ var com;
                 }
                 Example_0.Example_0$0 = Example_0$0;
                 Example_0$0["__interfaces"] = ["framework.components.api.EventListener"];
+                class Example_0$1 {
+                    constructor(__parent, h1) {
+                        this.h1 = h1;
+                        this.__parent = __parent;
+                    }
+                    /**
+                     *
+                     * @param {*} source
+                     * @param {Event} evt
+                     */
+                    performAction(source, evt) {
+                        this.h1.setHtml("dbl click!!");
+                    }
+                }
+                Example_0.Example_0$1 = Example_0$1;
+                Example_0$1["__interfaces"] = ["framework.components.api.EventListener"];
             })(Example_0 = ui.Example_0 || (ui.Example_0 = {}));
         })(ui = mycompany.ui || (mycompany.ui = {}));
     })(mycompany = com.mycompany || (com.mycompany = {}));
@@ -72,10 +175,10 @@ var com;
                     this.addChild(cardLayout);
                     const buttons = new JSContainer("div");
                     this.addChild(buttons);
-                    const first = new Button("first", "<<");
-                    const previous = new Button("previous", "<");
-                    const next = new Button("next", ">");
-                    const last = new Button("last", ">>");
+                    const first = new input.JSButton("first", "<<");
+                    const previous = new input.JSButton("previous", "<");
+                    const next = new input.JSButton("next", ">");
+                    const last = new input.JSButton("last", ">>");
                     buttons.addChild(first).addChild(previous).addChild(next).addChild(last);
                     first.addEventListener(new Example_1.Example_1$0(this, cardLayout), "click");
                     previous.addEventListener(new Example_1.Example_1$1(this, cardLayout), "click");
