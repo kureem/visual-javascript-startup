@@ -3,10 +3,17 @@
     {
       "name": "engine",
       "version": "1.0.2-SNAPSHOT",
+<<<<<<< HEAD
       "lastUpdateTimestamp": 1674048398000,
       "modelVersion": "unknown",
       "transpilerVersion": "3.0.0",
       "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-startup\\.jsweet\\candies\\js",
+=======
+      "lastUpdateTimestamp": 1681750820000,
+      "modelVersion": "unknown",
+      "transpilerVersion": "3.0.0",
+      "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-ecommerce\\.jsweet\\candies\\js",
+>>>>>>> 54fc7defe6b6599d4f284605462042308788c02f
       "jsDirPath": "META-INF/resources/webjars/engine/1.0.2-SNAPSHOT",
       "jsFilesPaths": [
         "META-INF/resources/webjars/engine/1.0.2-SNAPSHOT/bundle.js"
@@ -18,7 +25,7 @@
       "lastUpdateTimestamp": 1464186036000,
       "modelVersion": "unknown",
       "transpilerVersion": "1.1.0",
-      "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-startup\\.jsweet\\candies\\js",
+      "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-ecommerce\\.jsweet\\candies\\js",
       "jsDirPath": "META-INF/resources/webjars/jsweet-core/1.1.0-20160525",
       "jsFilesPaths": []
     },
@@ -28,7 +35,7 @@
       "lastUpdateTimestamp": 1609925316000,
       "modelVersion": "unknown",
       "transpilerVersion": "${jsweet.transpiler.version}",
-      "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-startup\\.jsweet\\candies\\js",
+      "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-ecommerce\\.jsweet\\candies\\js",
       "jsDirPath": "META-INF/resources/webjars/jsweet-core/6.3.0",
       "jsFilesPaths": []
     }

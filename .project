@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>visual-javascript-startup</name>
+<<<<<<< HEAD
+	<name>visual-javascript-ext</name>
+=======
+	<name>visual-javascript-ecommerce</name>
+>>>>>>> 9d8fcbcf3f3661d1f743ba1679b4f07f2dd21165
 	<comment></comment>
 	<projects>
 	</projects>
