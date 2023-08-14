@@ -69,7 +69,10 @@ var api;
                 else {
                     if (rparent != null && (rparent.constructor != null && rparent.constructor["__interfaces"] != null && rparent.constructor["__interfaces"].indexOf("framework.components.api.TemplateRenderable") >= 0)) {
                         const elem = rparent.getElement();
-                        elem.parentElement.replaceChild(njq, elem);
+                        const toreplace = elem.querySelector("[name=" + name + "]");
+                        if (toreplace != null) {
+                            toreplace.parentElement.replaceChild(njq, toreplace);
+                        }
                     }
                     else {
                         const index = rparent.getChildren().indexOf(c);
@@ -1176,7 +1179,6 @@ class JSContainer {
      * The payload to transmit when executing the event.
      */
     fireListener(key, evt) {
-        console.log("firing:" + key + " on " + this.getName());
         const listeners = this.getListeners()[key];
         if (listeners != null && listeners.length > 0) {
             for (let index139 = 0; index139 < listeners.length; index139++) {
@@ -1305,7 +1307,7 @@ class JSContainer {
      * the browser. This method is used internally by the engine
      *
      * @param {string} s
-     * A secret value know by the implementor of the framework. This
+     * A secret value known by the implementor of the framework. This
      * is to prevent any end user from invoking this method since it
      * is a public exposed method
      */
@@ -1519,6 +1521,19 @@ class JSContainer {
         this.addChild$framework_components_api_Renderable(child);
         return child;
     }
+    /**
+     * Adds a {@link JSContainer} to this component with the specified tag.<br />
+     * The added {@link JSContainer} will have the specified tag css class to it.<br />
+     * It will also be given the specified name.
+     *
+     * @param {string} name The name of the {@link JSContainer} added
+     *
+     * @param {string} tag  The tag of the {@link JSContainer} added
+     *
+     * @param {string} cls  The css class to be added on the added {@link JSContainer}
+     *
+     * @return {JSContainer} The Updated state if the current {@link JSContainer} for chaining.
+     */
     addChild(name, tag, cls) {
         if (((typeof name === 'string') || name === null) && ((typeof tag === 'string') || tag === null) && ((typeof cls === 'string') || cls === null)) {
             return this.addChild$java_lang_String$java_lang_String$java_lang_String(name, tag, cls);
@@ -2091,11 +2106,12 @@ JSContainer["__interfaces"] = ["framework.components.api.Renderable"];
 })(JSContainer || (JSContainer = {}));
 /**
  * Creates a new card layout container
+ *
  * @param {string} name - The name of the container.
- * @param {string} tag - The tag of the container
+ * @param {string} tag  - The tag of the container
  * @class
  * @extends JSContainer
- * @author Kureem Rossaye
+ * @author Kureem Rossaye<br>
  */
 class CardLayout extends JSContainer {
     constructor(name, tag) {
@@ -2105,6 +2121,7 @@ class CardLayout extends JSContainer {
     }
     /**
      * Adds a {@link CardLayoutItem} to this container.
+     *
      * @param {CardLayoutItem} item - The item to add
      * @return {CardLayout} - this
      */
@@ -2116,7 +2133,8 @@ class CardLayout extends JSContainer {
         return this;
     }
     /**
-     * Adds  {@link CardLayoutItem}s to this container.
+     * Adds {@link CardLayoutItem}s to this container.
+     *
      * @param {framework.components.CardLayoutItem[]} items - The items to add
      * @return {CardLayout} - this
      */
@@ -2131,13 +2149,15 @@ class CardLayout extends JSContainer {
     }
     /**
      *
-     * @return {number} - The index of the currently active (visible) {@link CardLayoutItem} of this container
+     * @return {number} - The index of the currently active (visible) {@link CardLayoutItem}
+     * of this container
      */
     getCurrentIndex() {
         return this.currentIndex;
     }
     /**
      * Search and return the {@link CardLayoutItem} having the specified index
+     *
      * @param {number} index - The index of the {@link CardLayoutItem} searching for
      * @return {CardLayoutItem} - The {@link CardLayoutItem} item having specified index
      */
@@ -2150,10 +2170,12 @@ class CardLayout extends JSContainer {
         }
     }
     /**
-     * Searches for the {@link CardLayoutItem} having specified name, and returns its index.
-     * @param {string} name - The name of {@link CardLayoutItem} searching for
-     * @return {number} - The index of the {@link CardLayoutItem} having name specified
+     * Searches for the {@link CardLayoutItem} having specified name, and returns
+     * its index.
      *
+     * @param {string} name - The name of {@link CardLayoutItem} searching for
+     *
+     * @return {number} - The index of the {@link CardLayoutItem} having name specified
      */
     getIndex(name) {
         let index = 0;
@@ -2172,11 +2194,14 @@ class CardLayout extends JSContainer {
         return -1;
     }
     /**
-     * Activates the next {@link CardLayoutItem} of this container, and setting the specified object as payload<br>
+     * Activates the next {@link CardLayoutItem} of this container, and setting the
+     * specified object as payload<br>
      * The previous Event will be activated<br>
      *
      * will return null and do nothing if currently the last item is active.
-     * @param {jsweet.lang.Object[]} params - The payload to set to the next {@link CardLayoutItem} being activated
+     *
+     * @param {jsweet.lang.Object[]} params - The payload to set to the next {@link CardLayoutItem} being
+     * activated
      * @return {CardLayoutItem} - The {@link CardLayoutItem} being activated.
      */
     next(...params) {
@@ -2208,9 +2233,12 @@ class CardLayout extends JSContainer {
         }
     }
     /**
-     * Activates the previous {@link CardLayoutItem} of this container, and setting the specified object as payload<br>
+     * Activates the previous {@link CardLayoutItem} of this container, and setting
+     * the specified object as payload<br>
      * will return null and do nothing if currently the first item is active.
-     * @param {jsweet.lang.Object[]} params - The payload to set to the next {@link CardLayoutItem} being activated
+     *
+     * @param {jsweet.lang.Object[]} params - The payload to set to the next {@link CardLayoutItem} being
+     * activated
      * @return {CardLayoutItem} - The {@link CardLayoutItem} being activated.
      */
     previous(...params) {
@@ -2232,14 +2260,26 @@ class CardLayout extends JSContainer {
         }
     }
     /**
-     * Activates the previous {@link CardLayoutItem} of this container, and setting the specified object as payload<br>
+     * Activates the previous {@link CardLayoutItem} of this container, and setting
+     * the specified object as payload<br>
      * will return null and do nothing if currently the first item is active.
-     * @param {jsweet.lang.Object[]} params - The payload to set to the next {@link CardLayoutItem} being activated
+     *
+     * @param {jsweet.lang.Object[]} params - The payload to set to the next {@link CardLayoutItem} being
+     * activated
      * @return {CardLayoutItem} - The {@link CardLayoutItem} being activated.
      */
     back(...params) {
         return this.previous.apply(this, params);
     }
+    /**
+     * Shows the first {@link CardLayoutItem} by passing the specified parameters in
+     * the event triggered when the method is called
+     *
+     * @param {jsweet.lang.Object[]} params The parameters that are set in the event triggered when the
+     * method is called
+     *
+     * @return {CardLayoutItem} The current state of this component
+     */
     first(...params) {
         if (this.currentIndex > 0) {
             const current = this.getItem(this.currentIndex);
