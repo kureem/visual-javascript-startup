@@ -1,20 +1,46 @@
-/* Generated from Java with JSweet 3.0.0 - http://www.jsweet.org */
+/*
+ * Copyright 2012-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 var api;
 (function (api) {
     class ContainerRenderer {
         constructor() {
         }
+        static getElementById(id) {
+            return document.getElementById(id);
+        }
+        decorate(renderable) {
+        }
         doRender(c, root) {
-            const jq = document.getElementById(c.getId());
+            const jq = c.getElement();
             const tag = c.getTag();
             const rendered = c.isRendered();
             const name = c.getName();
             const html = c.getHtml();
-            const parent = c.getParent();
+            const rparent = c.getParent();
             if (!rendered) {
                 if (jq != null)
                     jq.remove();
-                const njq = document.createElement(tag);
+                let njq = null;
+                if (tag === "svg") {
+                    njq = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                }
+                else {
+                    njq = document.createElement(tag);
+                }
+                c.setElement(njq);
                 if (name != null && name.length > 0)
                     njq.setAttribute("name", name);
                 njq.setAttribute("id", c.getId());
@@ -31,7 +57,7 @@ var api;
                 }
                 this.renderAttributes(njq, c, false);
                 this.renderStyles(njq, c, false);
-                if (parent == null) {
+                if (rparent == null) {
                     if (root == null) {
                         const body = document.getElementsByTagName("body")[0];
                         body.appendChild(njq);
@@ -41,26 +67,26 @@ var api;
                     }
                 }
                 else {
-                    if (parent != null && (parent.constructor != null && parent.constructor["__interfaces"] != null && parent.constructor["__interfaces"].indexOf("framework.components.api.TemplateRenderable") >= 0)) {
-                        const elem = document.getElementById(parent.getId()).querySelector("[name=" + name + "]");
+                    if (rparent != null && (rparent.constructor != null && rparent.constructor["__interfaces"] != null && rparent.constructor["__interfaces"].indexOf("framework.components.api.TemplateRenderable") >= 0)) {
+                        const elem = rparent.getElement();
                         elem.parentElement.replaceChild(njq, elem);
                     }
                     else {
-                        const index = parent.getChildren().indexOf(c);
+                        const index = rparent.getChildren().indexOf(c);
                         let nextSib = null;
-                        if (index < parent.getChildren().length - 1) {
-                            nextSib = parent.getChildren()[index + 1];
+                        if (index < rparent.getChildren().length - 1) {
+                            nextSib = rparent.getChildren()[index + 1];
                             if (!nextSib.isRendered()) {
                                 nextSib = null;
                             }
                         }
                         if (nextSib != null) {
-                            const p = document.getElementById(parent.getId());
-                            p.insertBefore(njq, document.getElementById(nextSib.getId()));
+                            const p = rparent.getElement();
+                            p.insertBefore(njq, nextSib.getElement());
                         }
                         else {
                             try {
-                                document.getElementById(parent.getId()).appendChild(njq);
+                                rparent.getElement().appendChild(njq);
                             }
                             catch (e) {
                                 console.error(e.message, e);
@@ -212,20 +238,126 @@ var api;
     ContainerRenderer["__interfaces"] = ["framework.components.api.Renderer"];
 })(api || (api = {}));
 (function (api) {
-    class StringInputTypes {
-        static types_$LI$() { if (StringInputTypes.types == null) {
-            StringInputTypes.types = [StringInputTypes.text, StringInputTypes.password, StringInputTypes.email, StringInputTypes.url, StringInputTypes.search, StringInputTypes.tel, StringInputTypes.color];
-        } return StringInputTypes.types; }
+    let InputType;
+    (function (InputType) {
+        InputType[InputType["BUTTON"] = 0] = "BUTTON";
+        InputType[InputType["CHECKBOX"] = 1] = "CHECKBOX";
+        InputType[InputType["DATE"] = 2] = "DATE";
+        InputType[InputType["DATETIME_LOCAL"] = 3] = "DATETIME_LOCAL";
+        InputType[InputType["FILE"] = 4] = "FILE";
+        InputType[InputType["HIDDEN"] = 5] = "HIDDEN";
+        InputType[InputType["IMAGE"] = 6] = "IMAGE";
+        InputType[InputType["MONTH"] = 7] = "MONTH";
+        InputType[InputType["NUMBER"] = 8] = "NUMBER";
+        InputType[InputType["RADIO"] = 9] = "RADIO";
+        InputType[InputType["RANGE"] = 10] = "RANGE";
+        InputType[InputType["RESET"] = 11] = "RESET";
+        InputType[InputType["SUBMIT"] = 12] = "SUBMIT";
+        InputType[InputType["TIME"] = 13] = "TIME";
+        InputType[InputType["WEEK"] = 14] = "WEEK";
+        InputType[InputType["TEXT"] = 15] = "TEXT";
+        InputType[InputType["PASSWORD"] = 16] = "PASSWORD";
+        InputType[InputType["EMAIL"] = 17] = "EMAIL";
+        InputType[InputType["URL"] = 18] = "URL";
+        InputType[InputType["SEARCH"] = 19] = "SEARCH";
+        InputType[InputType["TEL"] = 20] = "TEL";
+        InputType[InputType["COLOR"] = 21] = "COLOR";
+    })(InputType = api.InputType || (api.InputType = {}));
+    /** @ignore */
+    class InputType_$WRAPPER {
+        constructor(_$ordinal, _$name, value, group) {
+            this._$ordinal = _$ordinal;
+            this._$name = _$name;
+            if (((typeof value === 'string') || value === null) && ((typeof group === 'string') || group === null)) {
+                let __args = arguments;
+                if (this.value === undefined) {
+                    this.value = null;
+                }
+                this.group = "text";
+                this.value = value;
+                this.group = group;
+            }
+            else if (((typeof value === 'string') || value === null) && group === undefined) {
+                let __args = arguments;
+                if (this.value === undefined) {
+                    this.value = null;
+                }
+                this.group = "text";
+                this.value = value;
+                this.group = "text";
+            }
+            else
+                throw new Error('invalid overload');
+        }
+        getValue() {
+            return this.value;
+        }
+        getGroup() {
+            return this.group;
+        }
+        name() { return this._$name; }
+        ordinal() { return this._$ordinal; }
+        compareTo(other) { return this._$ordinal - (isNaN(other) ? other._$ordinal : other); }
     }
-    StringInputTypes.text = "text";
-    StringInputTypes.password = "password";
-    StringInputTypes.email = "email";
-    StringInputTypes.url = "url";
-    StringInputTypes.search = "search";
-    StringInputTypes.tel = "tel";
-    StringInputTypes.color = "color";
-    api.StringInputTypes = StringInputTypes;
-    StringInputTypes["__class"] = "framework.components.api.StringInputTypes";
+    api.InputType_$WRAPPER = InputType_$WRAPPER;
+    InputType["__class"] = "framework.components.api.InputType";
+    InputType["__interfaces"] = ["java.lang.constant.Constable", "java.lang.Comparable", "java.io.Serializable"];
+    InputType["_$wrappers"] = { 0: new InputType_$WRAPPER(0, "BUTTON", "button", "button"), 1: new InputType_$WRAPPER(1, "CHECKBOX", "checkbox", "boolean"), 2: new InputType_$WRAPPER(2, "DATE", "date", "date"), 3: new InputType_$WRAPPER(3, "DATETIME_LOCAL", "datetime-local", "date"), 4: new InputType_$WRAPPER(4, "FILE", "file", "file"), 5: new InputType_$WRAPPER(5, "HIDDEN", "hidden", "text"), 6: new InputType_$WRAPPER(6, "IMAGE", "image", "image"), 7: new InputType_$WRAPPER(7, "MONTH", "month", "date"), 8: new InputType_$WRAPPER(8, "NUMBER", "number", "number"), 9: new InputType_$WRAPPER(9, "RADIO", "radio", "boolean"), 10: new InputType_$WRAPPER(10, "RANGE", "range", "number"), 11: new InputType_$WRAPPER(11, "RESET", "reset", "button"), 12: new InputType_$WRAPPER(12, "SUBMIT", "submit", "button"), 13: new InputType_$WRAPPER(13, "TIME", "time", "date"), 14: new InputType_$WRAPPER(14, "WEEK", "week", "date"), 15: new InputType_$WRAPPER(15, "TEXT", "text"), 16: new InputType_$WRAPPER(16, "PASSWORD", "password"), 17: new InputType_$WRAPPER(17, "EMAIL", "email"), 18: new InputType_$WRAPPER(18, "URL", "url"), 19: new InputType_$WRAPPER(19, "SEARCH", "search"), 20: new InputType_$WRAPPER(20, "TEL", "tel"), 21: new InputType_$WRAPPER(21, "COLOR", "color") };
+})(api || (api = {}));
+(function (api) {
+    let Units;
+    (function (Units) {
+        Units[Units["PIXEL"] = 0] = "PIXEL";
+        Units[Units["CENTIMETER"] = 1] = "CENTIMETER";
+        Units[Units["MILLIMETER"] = 2] = "MILLIMETER";
+        Units[Units["INCH"] = 3] = "INCH";
+        Units[Units["POINT"] = 4] = "POINT";
+        Units[Units["PICA"] = 5] = "PICA";
+        Units[Units["EM"] = 6] = "EM";
+        Units[Units["EX"] = 7] = "EX";
+        Units[Units["CH"] = 8] = "CH";
+        Units[Units["REM"] = 9] = "REM";
+        Units[Units["VIEWPORT_WIDTH"] = 10] = "VIEWPORT_WIDTH";
+        Units[Units["VIEWPORT_HEIGHT"] = 11] = "VIEWPORT_HEIGHT";
+        Units[Units["VIEWPORT_MIN"] = 12] = "VIEWPORT_MIN";
+        Units[Units["VIEWPORT_MAX"] = 13] = "VIEWPORT_MAX";
+        Units[Units["PERCENT"] = 14] = "PERCENT";
+    })(Units = api.Units || (api.Units = {}));
+    /** @ignore */
+    class Units_$WRAPPER {
+        constructor(_$ordinal, _$name, name, display, type) {
+            this._$ordinal = _$ordinal;
+            this._$name = _$name;
+            if (this.__name === undefined) {
+                this.__name = null;
+            }
+            if (this.display === undefined) {
+                this.display = null;
+            }
+            if (this.type === undefined) {
+                this.type = null;
+            }
+            this.__name = name;
+            this.display = display;
+            this.type = type;
+        }
+        getName() {
+            return this.__name;
+        }
+        getDisplay() {
+            return this.display;
+        }
+        getType() {
+            return this.type;
+        }
+        name() { return this._$name; }
+        ordinal() { return this._$ordinal; }
+        compareTo(other) { return this._$ordinal - (isNaN(other) ? other._$ordinal : other); }
+    }
+    api.Units_$WRAPPER = Units_$WRAPPER;
+    Units["__class"] = "framework.components.api.Units";
+    Units["__interfaces"] = ["java.lang.constant.Constable", "java.lang.Comparable", "java.io.Serializable"];
+    Units["_$wrappers"] = { 0: new Units_$WRAPPER(0, "PIXEL", "pixel", "px", "absolute"), 1: new Units_$WRAPPER(1, "CENTIMETER", "centimer", "cm", "absolute"), 2: new Units_$WRAPPER(2, "MILLIMETER", "millimeter", "mm", "absolute"), 3: new Units_$WRAPPER(3, "INCH", "inch", "mm", "absolute"), 4: new Units_$WRAPPER(4, "POINT", "point", "pt", "absolute"), 5: new Units_$WRAPPER(5, "PICA", "pica", "pc", "absolute"), 6: new Units_$WRAPPER(6, "EM", "em", "em", "relative"), 7: new Units_$WRAPPER(7, "EX", "ex", "ex", "relative"), 8: new Units_$WRAPPER(8, "CH", "ch", "ch", "relative"), 9: new Units_$WRAPPER(9, "REM", "root element", "rem", "relative"), 10: new Units_$WRAPPER(10, "VIEWPORT_WIDTH", "viewport width", "vw", "relative"), 11: new Units_$WRAPPER(11, "VIEWPORT_HEIGHT", "viewport height", "vw", "relative"), 12: new Units_$WRAPPER(12, "VIEWPORT_MIN", "viewport minimum", "vmin", "relative"), 13: new Units_$WRAPPER(13, "VIEWPORT_MAX", "viewport maximum", "vmax", "relative"), 14: new Units_$WRAPPER(14, "PERCENT", "percent", "%", "relative") };
 })(api || (api = {}));
 (function (api) {
     /**
@@ -244,27 +376,80 @@ var api;
         constructor(message, errorCode) {
             if (((typeof message === 'string') || message === null) && ((typeof errorCode === 'number') || errorCode === null)) {
                 let __args = arguments;
-                super("Validation Error");
+                super(message);
+                if (this.code === undefined) {
+                    this.code = 0;
+                }
                 this.errors = (new Array());
-                ValidationException.addError(message, errorCode, this);
+                this.code = errorCode;
             }
             else if (((typeof message === 'number') || message === null) && errorCode === undefined) {
                 let __args = arguments;
                 let errorCode = __args[0];
                 super();
+                if (this.code === undefined) {
+                    this.code = 0;
+                }
                 this.errors = (new Array());
-                ValidationException.addError("", errorCode, this);
+                this.code = errorCode;
             }
             else if (message === undefined && errorCode === undefined) {
                 let __args = arguments;
                 super();
+                if (this.code === undefined) {
+                    this.code = 0;
+                }
                 this.errors = (new Array());
             }
             else
                 throw new Error('invalid overload');
         }
-        static addError(msg, code, e) {
-            eval("if(!e[\'errors\']){e[\'errors\'] = [];}e[\'errors\'].push({\'msg\':msg, \'code\':code});");
+        static throwError$java_lang_String$int(msg, code) {
+            throw new ValidationException(msg, code);
+        }
+        static throwError$java_lang_String$jsweet_dom_ValidityState(msg, state) {
+            if (!state.valid) {
+                if (state.badInput) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.badInput);
+                }
+                else if (state.customError) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.customError);
+                }
+                else if (state.patternMismatch) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.patternMismatch);
+                }
+                else if (state.rangeOverflow) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.rangeOverflow);
+                }
+                else if (state.rangeUnderflow) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.rangeUnderflow);
+                }
+                else if (state.stepMismatch) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.stepMismatch);
+                }
+                else if (state.tooLong) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.tooLong);
+                }
+                else if (state.typeMismatch) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.typeMismatch);
+                }
+                else if (state.valueMissing) {
+                    ValidationException.throwError$java_lang_String$int(msg, ValidationException.valueMissing);
+                }
+            }
+        }
+        static throwError(msg, state) {
+            if (((typeof msg === 'string') || msg === null) && ((state != null && state instanceof ValidityState) || state === null)) {
+                return api.ValidationException.throwError$java_lang_String$jsweet_dom_ValidityState(msg, state);
+            }
+            else if (((typeof msg === 'string') || msg === null) && ((typeof state === 'number') || state === null)) {
+                return api.ValidationException.throwError$java_lang_String$int(msg, state);
+            }
+            else
+                throw new Error('invalid overload');
+        }
+        getCode() {
+            return this.code;
         }
     }
     /**
@@ -320,6 +505,15 @@ var api;
      */
     ValidationException.valueMissing = 8;
     /**
+     * Is a <code>Numeric</code> indicating the value less than the specified
+     * <code>minlength</code> for {@link JSTextInput}
+     * component.
+     * <em><strong>Note:</strong> This will never be <code>true</code> in Gecko,
+     * because elements' values are prevented from being shorter than
+     * <code>minlength</code>.</em>
+     */
+    ValidationException.tooShort = 9;
+    /**
      *
      */
     ValidationException.serialVersionUID = 1;
@@ -327,33 +521,6 @@ var api;
     ValidationException["__class"] = "framework.components.api.ValidationException";
     ValidationException["__interfaces"] = ["java.io.Serializable"];
 })(api || (api = {}));
-class FileUploader {
-}
-FileUploader["__class"] = "framework.components.FileUploader";
-var input;
-(function (input) {
-    class DateInputTypes {
-        static types_$LI$() { if (DateInputTypes.types == null) {
-            DateInputTypes.types = [DateInputTypes.date, DateInputTypes.month, DateInputTypes.week];
-        } return DateInputTypes.types; }
-    }
-    DateInputTypes.date = "date";
-    DateInputTypes.month = "month";
-    DateInputTypes.week = "week";
-    input.DateInputTypes = DateInputTypes;
-    DateInputTypes["__class"] = "framework.components.input.DateInputTypes";
-})(input || (input = {}));
-(function (input) {
-    class NumericInputTypes {
-        static types_$LI$() { if (NumericInputTypes.types == null) {
-            NumericInputTypes.types = [NumericInputTypes.number, NumericInputTypes.range];
-        } return NumericInputTypes.types; }
-    }
-    NumericInputTypes.number = "number";
-    NumericInputTypes.range = "range";
-    input.NumericInputTypes = NumericInputTypes;
-    NumericInputTypes["__class"] = "framework.components.input.NumericInputTypes";
-})(input || (input = {}));
 var table;
 (function (table) {
     class DefaulTableModel {
@@ -539,95 +706,6 @@ var table;
     DefaultTableColumnModel["__interfaces"] = ["framework.components.table.TableColumnModel", "java.util.Enumeration"];
 })(table || (table = {}));
 (function (table) {
-    class TableColumn {
-        constructor() {
-            if (this.modelIndex === undefined) {
-                this.modelIndex = 0;
-            }
-            if (this.identifier === undefined) {
-                this.identifier = null;
-            }
-            if (this.width === undefined) {
-                this.width = 0;
-            }
-            if (this.minWidth === undefined) {
-                this.minWidth = 0;
-            }
-            if (this.maxWidth === undefined) {
-                this.maxWidth = 0;
-            }
-            if (this.headerRenderer === undefined) {
-                this.headerRenderer = null;
-            }
-            if (this.headerValue === undefined) {
-                this.headerValue = null;
-            }
-            if (this.cellRenderer === undefined) {
-                this.cellRenderer = null;
-            }
-            if (this.resizable === undefined) {
-                this.resizable = false;
-            }
-        }
-        getModelIndex() {
-            return this.modelIndex;
-        }
-        setModelIndex(modelIndex) {
-            this.modelIndex = modelIndex;
-        }
-        getIdentifier() {
-            return this.identifier;
-        }
-        setIdentifier(identifier) {
-            this.identifier = identifier;
-        }
-        getWidth() {
-            return this.width;
-        }
-        setWidth(width) {
-            this.width = width;
-        }
-        getMinWidth() {
-            return this.minWidth;
-        }
-        setMinWidth(minWidth) {
-            this.minWidth = minWidth;
-        }
-        getMaxWidth() {
-            return this.maxWidth;
-        }
-        setMaxWidth(maxWidth) {
-            this.maxWidth = maxWidth;
-        }
-        getHeaderRenderer() {
-            return this.headerRenderer;
-        }
-        setHeaderRenderer(headerRenderer) {
-            this.headerRenderer = headerRenderer;
-        }
-        getHeaderValue() {
-            return this.headerValue;
-        }
-        setHeaderValue(headerValue) {
-            this.headerValue = headerValue;
-        }
-        getCellRenderer() {
-            return this.cellRenderer;
-        }
-        setCellRenderer(cellRenderer) {
-            this.cellRenderer = cellRenderer;
-        }
-        isResizable() {
-            return this.resizable;
-        }
-        setResizable(resizable) {
-            this.resizable = resizable;
-        }
-    }
-    table.TableColumn = TableColumn;
-    TableColumn["__class"] = "framework.components.table.TableColumn";
-})(table || (table = {}));
-(function (table) {
     /**
      * The cells from (firstRow, column) to (lastRow, column) have been changed.
      * The <I>column</I> refers to the column index of the cell in the model's
@@ -635,11 +713,11 @@ var table;
      * specified range of rows are considered changed.
      * <p>
      * The <I>type</I> should be one of: INSERT, UPDATE and DELETE.
-     * @param {*} source
-     * @param {number} firstRow
-     * @param {number} lastRow
-     * @param {number} column
-     * @param {number} type
+     * @param {*} source - The <code>TableModel</code> on which the event has occurred
+     * @param {number} firstRow - The first row in the range of rows affected
+     * @param {number} lastRow - The last row in the range of rows affected
+     * @param {number} column - The column index in which the event occurred
+     * @param {number} type - The type of event occurred
      * @class
      */
     class TableModelEvent {
@@ -849,14 +927,17 @@ var table;
         /**
          * Returns the first row that changed.  HEADER_ROW means the meta data,
          * ie. names, types and order of the columns.
-         * @return {number}
+         *
+         * @return {number} The first row affected
          */
         getFirstRow() {
             return this.firstRow;
         }
         /**
+         *
          * Returns the last row that changed.
-         * @return {number}
+         *
+         * @return {number} - The last row affected
          */
         getLastRow() {
             return this.lastRow;
@@ -865,14 +946,15 @@ var table;
          * Returns the column for the event.  If the return
          * value is ALL_COLUMNS; it means every column in the specified
          * rows changed.
-         * @return {number}
+         * @return {number} - The column index affected
          */
         getColumn() {
             return this.column;
         }
         /**
          * Returns the type of event - one of: INSERT, UPDATE and DELETE.
-         * @return {number}
+         *
+         * @return {number} - The type of event
          */
         getType() {
             return this.type;
@@ -940,20 +1022,18 @@ var util;
             if (obj == null) {
                 return null;
             }
-            if ( /* contains */(property.indexOf(".") != -1)) {
-                const parts = property.split(".");
-                let tmp = obj;
-                for (let index137 = 0; index137 < parts.length; index137++) {
-                    let part = parts[index137];
-                    {
-                        tmp = PropertyUtil.getValue(tmp, part);
-                    }
-                }
-                return tmp;
-            }
-            else {
+            if (!(property.indexOf(".") != -1)) {
                 return obj[property];
             }
+            const parts = property.split(".");
+            let tmp = obj;
+            for (let index137 = 0; index137 < parts.length; index137++) {
+                let part = parts[index137];
+                {
+                    tmp = PropertyUtil.getValue(tmp, part);
+                }
+            }
+            return tmp;
         }
         static hasOwnProperty(obj, property) {
             if ( /* contains */(property.indexOf(".") != -1)) {
@@ -1044,6 +1124,9 @@ class JSContainer {
     constructor(name, tag) {
         if (((typeof name === 'string') || name === null) && ((typeof tag === 'string') || tag === null)) {
             let __args = arguments;
+            if (this.elem_ === undefined) {
+                this.elem_ = null;
+            }
             this.d = new Object();
             this.setTag(tag);
             this.setName(name);
@@ -1051,6 +1134,9 @@ class JSContainer {
         else if (((typeof name === 'string') || name === null) && tag === undefined) {
             let __args = arguments;
             let tag = __args[0];
+            if (this.elem_ === undefined) {
+                this.elem_ = null;
+            }
             this.d = new Object();
             this.setTag(tag);
         }
@@ -1189,7 +1275,10 @@ class JSContainer {
         }
     }
     getNative() {
-        const elem = document.getElementById(this.getId());
+        if (this.elem_ != null) {
+            return this.elem_;
+        }
+        const elem = api.ContainerRenderer.getElementById(this.getId());
         if (elem != null) {
             return elem;
         }
@@ -1696,6 +1785,7 @@ class JSContainer {
     setRendered(b) {
         this.d["rendered"] = b;
         if (!b) {
+            this.elem_ = null;
             {
                 let array150 = this.getChildren();
                 for (let index149 = 0; index149 < array150.length; index149++) {
@@ -1721,10 +1811,24 @@ class JSContainer {
         return l;
     }
     render$() {
-        if (this.getParent() == null)
-            this.render$jsweet_dom_HTMLElement(null);
-        else
-            this.render$jsweet_dom_HTMLElement(document.getElementById(this.getParent().getId()));
+        if (this.getParent() == null) {
+            const nat = this.getNative();
+            if (nat != null) {
+                const parent = nat.parentElement;
+                if (parent != null) {
+                    this.render$jsweet_dom_HTMLElement(nat.parentElement);
+                }
+                else {
+                    this.render$jsweet_dom_HTMLElement(null);
+                }
+            }
+            else {
+                this.render$jsweet_dom_HTMLElement(null);
+            }
+        }
+        else {
+            this.render$jsweet_dom_HTMLElement(this.getParent().getElement());
+        }
     }
     /**
      * This method is invoked by the {@link Renderer} after the component is
@@ -1742,22 +1846,14 @@ class JSContainer {
      * Unitility method to check if the specified object is present in the
      * specified array
      *
-     * @param {?[]} lst
+     * @param {Array} lst
      * The array to check if object is present
      * @param {*} o
      * The object to check if present
      * @return {boolean} Whether is present or not
      */
     contains(lst, o) {
-        for (let index151 = 0; index151 < lst.length; index151++) {
-            let oo = lst[index151];
-            {
-                if ( /* equals */((o1, o2) => o1 && o1.equals ? o1.equals(o2) : o1 === o2)(oo, o)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return lst.indexOf(o) >= 0;
     }
     render$jsweet_dom_HTMLElement(parent) {
         let renderers = this.getRenderers();
@@ -1767,22 +1863,22 @@ class JSContainer {
         if (!this.contains(renderers, JSContainer.defaultRenderer_$LI$())) {
             const tmp = (new Array());
             tmp.push(JSContainer.defaultRenderer_$LI$());
-            for (let index152 = 0; index152 < renderers.length; index152++) {
-                let r = renderers[index152];
+            for (let index151 = 0; index151 < renderers.length; index151++) {
+                let r = renderers[index151];
                 {
                     tmp.push(r);
                 }
             }
             renderers = tmp;
         }
-        for (let index153 = 0; index153 < renderers.length; index153++) {
-            let renderer = renderers[index153];
+        for (let index152 = 0; index152 < renderers.length; index152++) {
+            let renderer = renderers[index152];
             renderer.doRender(this, parent);
         }
         {
-            let array155 = this.getChildren();
-            for (let index154 = 0; index154 < array155.length; index154++) {
-                let child = array155[index154];
+            let array154 = this.getChildren();
+            for (let index153 = 0; index153 < array154.length; index153++) {
+                let child = array154[index153];
                 {
                     child['render$']();
                 }
@@ -1819,8 +1915,8 @@ class JSContainer {
         const previous = this.d["data"];
         if (previous != null && previous instanceof Array) {
             const arData = previous;
-            for (let index156 = 0; index156 < arData.length; index156++) {
-                let line = arData[index156];
+            for (let index155 = 0; index155 < arData.length; index155++) {
+                let line = arData[index155];
                 {
                     const value = line["value"];
                     this.setAttribute(value, null);
@@ -1830,9 +1926,9 @@ class JSContainer {
         else {
             if (previous != null) {
                 {
-                    let array158 = Object.keys(previous);
-                    for (let index157 = 0; index157 < array158.length; index157++) {
-                        let key = array158[index157];
+                    let array157 = Object.keys(previous);
+                    for (let index156 = 0; index156 < array157.length; index156++) {
+                        let key = array157[index156];
                         {
                             this.setAttribute(key, null);
                         }
@@ -1844,8 +1940,8 @@ class JSContainer {
         if (data != null) {
             if (data != null && data instanceof Array) {
                 const arData = data;
-                for (let index159 = 0; index159 < arData.length; index159++) {
-                    let line = arData[index159];
+                for (let index158 = 0; index158 < arData.length; index158++) {
+                    let line = arData[index158];
                     {
                         const text = line["text"];
                         const value = line["value"];
@@ -1855,9 +1951,9 @@ class JSContainer {
             }
             else {
                 {
-                    let array161 = Object.keys(data);
-                    for (let index160 = 0; index160 < array161.length; index160++) {
-                        let key = array161[index160];
+                    let array160 = Object.keys(data);
+                    for (let index159 = 0; index159 < array160.length; index159++) {
+                        let key = array160[index159];
                         {
                             this.setAttribute(key, data[key]);
                         }
@@ -1881,9 +1977,9 @@ class JSContainer {
         const clsss = parent.getAttribute("class");
         if (clsss != null) {
             {
-                let array163 = parent.getAttribute("class").split(" ");
-                for (let index162 = 0; index162 < array163.length; index162++) {
-                    let s = array163[index162];
+                let array162 = parent.getAttribute("class").split(" ");
+                for (let index161 = 0; index161 < array162.length; index161++) {
+                    let s = array162[index161];
                     {
                         if (s.trim() === cls)
                             return parent;
@@ -1956,6 +2052,20 @@ class JSContainer {
     getUserData() {
         return this.d["userData"];
     }
+    /**
+     *
+     * @param {HTMLElement} elem
+     */
+    setElement(elem) {
+        this.elem_ = elem;
+    }
+    /**
+     *
+     * @return {HTMLElement}
+     */
+    getElement() {
+        return this.getNative();
+    }
 }
 JSContainer.idCount = 0;
 JSContainer["__class"] = "framework.components.JSContainer";
@@ -1973,20 +2083,12 @@ JSContainer["__interfaces"] = ["framework.components.api.Renderable"];
          */
         performAction(source, evt) {
             evt["source"] = source;
-            this.listener(evt);
+            (target => (typeof target === 'function') ? target(source, evt) : target.apply(source, evt))(this.listener);
         }
     }
     JSContainer.JSContainer$0 = JSContainer$0;
     JSContainer$0["__interfaces"] = ["framework.components.api.EventListener"];
 })(JSContainer || (JSContainer = {}));
-class Button extends JSContainer {
-    constructor(name, text) {
-        super(name, "button");
-        this.setHtml(text);
-    }
-}
-Button["__class"] = "framework.components.Button";
-Button["__interfaces"] = ["framework.components.api.Renderable"];
 /**
  * Creates a new card layout container
  * @param {string} name - The name of the container.
@@ -2019,8 +2121,8 @@ class CardLayout extends JSContainer {
      * @return {CardLayout} - this
      */
     addItems(...items) {
-        for (let index164 = 0; index164 < items.length; index164++) {
-            let item = items[index164];
+        for (let index163 = 0; index163 < items.length; index163++) {
+            let item = items[index163];
             {
                 this.addItem(item);
             }
@@ -2056,9 +2158,9 @@ class CardLayout extends JSContainer {
     getIndex(name) {
         let index = 0;
         {
-            let array166 = this.getChildren();
-            for (let index165 = 0; index165 < array166.length; index165++) {
-                let child = array166[index165];
+            let array165 = this.getChildren();
+            for (let index164 = 0; index164 < array165.length; index164++) {
+                let child = array165[index164];
                 {
                     if (child.getName() === name) {
                         return index;
@@ -2198,9 +2300,9 @@ class CardLayout extends JSContainer {
             return;
         }
         {
-            let array168 = this.getChildren();
-            for (let index167 = 0; index167 < array168.length; index167++) {
-                let child = array168[index167];
+            let array167 = this.getChildren();
+            for (let index166 = 0; index166 < array167.length; index166++) {
+                let child = array167[index166];
                 {
                     if (child.getName() === name) {
                         const evt = new CustomEvent("activate");
@@ -2243,9 +2345,9 @@ class CardLayout extends JSContainer {
     refresh() {
         const def = this.getDefault();
         {
-            let array170 = this.getChildren();
-            for (let index169 = 0; index169 < array170.length; index169++) {
-                let r = array170[index169];
+            let array169 = this.getChildren();
+            for (let index168 = 0; index168 < array169.length; index168++) {
+                let r = array169[index168];
                 {
                     if (r.getName() === def) {
                         r.setStyle("display", null);
@@ -2260,12 +2362,20 @@ class CardLayout extends JSContainer {
 }
 CardLayout["__class"] = "framework.components.CardLayout";
 CardLayout["__interfaces"] = ["framework.components.api.Renderable"];
+/**
+ * Instantiate a {@link CardLayoutItem} with specified name and tag
+ * @param {string} name - name of item
+ * @param {string} tag - tag of item
+ * @class
+ * @extends JSContainer
+ * @author Kureem Rossaye
+ */
 class CardLayoutItem extends JSContainer {
     constructor(name, tag) {
         super(name, tag);
     }
     /**
-     *
+     * returns array of specific supported events
      * @return {java.lang.String[]}
      */
     advancedEventTypes() {
@@ -2274,12 +2384,23 @@ class CardLayoutItem extends JSContainer {
 }
 CardLayoutItem["__class"] = "framework.components.CardLayoutItem";
 CardLayoutItem["__interfaces"] = ["framework.components.api.Renderable"];
+/**
+ * Instantiate this container with the specified name
+ * @param {string} name - name of container
+ * @class
+ * @extends JSContainer
+ * @author Kureem Rossaye
+ */
 class ExternalJavascript extends JSContainer {
     constructor(name) {
         super(name, "script");
         this.setAttribute("type", "text/javascript");
-        this.setAttribute("identifier", "html:javascript");
     }
+    /**
+     * Sets the source of the external javascript
+     * @param {string} src - source of file
+     * @return {ExternalJavascript} - this
+     */
     setSource(src) {
         this.setAttribute("src", src);
         return this;
@@ -2287,22 +2408,43 @@ class ExternalJavascript extends JSContainer {
 }
 ExternalJavascript["__class"] = "framework.components.ExternalJavascript";
 ExternalJavascript["__interfaces"] = ["framework.components.api.Renderable"];
+/**
+ * External this external stylesheet container with the specified name
+ * @param {string} name - the name of the container
+ * @class
+ * @extends JSContainer
+ * @author Kureem Rossaye
+ */
 class ExternalStylesheet extends JSContainer {
     constructor(name) {
         super(name, "link");
         this.setAttribute("type", "text/css");
         this.setAttribute("rel", "stylesheet");
-        this.setAttribute("identifier", "html:stylesheet");
         this.addRenderer(this);
     }
+    /**
+     * Sets the source of the external css file and returns the updated instance
+     * @param {string} src - source of external css file
+     * @return {ExternalStylesheet} - updated instance of this
+     */
     setSource(src) {
         this.setAttribute("source", src);
         return this;
     }
+    /**
+     * Sets the cross origin value of the css file
+     * @param {string} origin - cross origin value
+     * @return {ExternalStylesheet} - updated instance of this
+     */
     setCrossOrigin(origin) {
         this.setAttribute("crossorigin", origin);
         return this;
     }
+    /**
+     * Sets the media of the css file
+     * @param {string} media - the media of the css file
+     * @return {ExternalStylesheet} - updated instance of this
+     */
     setMedia(media) {
         this.setAttribute("media", media);
         return this;
@@ -2316,7 +2458,7 @@ class ExternalStylesheet extends JSContainer {
         }
     }
     /**
-     *
+     * Rendered used internally which avoids rendering of the css file when the tag is used in our buider.
      * @param {ExternalStylesheet} c
      * @param {HTMLElement} root
      */
@@ -2401,8 +2543,8 @@ class HTMLTemplateContainer extends JSContainer {
                 const tag = tm.tagName;
                 this.setTag(tag);
                 const attrs = tm.attributes;
-                for (let index171 = 0; index171 < attrs.length; index171++) {
-                    let att = attrs[index171];
+                for (let index170 = 0; index170 < attrs.length; index170++) {
+                    let att = attrs[index170];
                     {
                         this.setAttribute(att.name, att.value);
                     }
@@ -2443,14 +2585,419 @@ class HTMLTemplateContainer extends JSContainer {
 }
 HTMLTemplateContainer["__class"] = "framework.components.HTMLTemplateContainer";
 HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", "framework.components.api.TemplateRenderable"];
+var input;
 (function (input) {
-    class AbstractJSInput extends JSContainer {
+    /**
+     * Creates a new instance of the button with specified name and text
+     * @param {string} name - name of the button
+     * @param {string} text - text inside the button
+     * @class
+     * @extends JSContainer
+     * @author Kureem Rossaye
+     */
+    class JSButton extends JSContainer {
+        constructor(name, text) {
+            super(name, "input");
+            this.setAttribute("type", api.InputType["_$wrappers"][api.InputType.BUTTON].getValue());
+            this.setAttribute("value", text);
+        }
+        /**
+         * Sets the type of the button
+         * @param {api.InputType} type - type of the button. Valid values are: InputType.RESET | InputType.BUTTON | InputType.SUBMIT
+         * @return {input.JSButton} - updated instance of this Button
+         */
+        setType(type) {
+            if (type != null) {
+                if (api.InputType["_$wrappers"][type].getGroup() !== "button") {
+                    throw Object.defineProperty(new Error("only button types are allowed"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+                }
+                this.setAttribute("type", api.InputType["_$wrappers"][type].getValue());
+            }
+            else {
+                throw Object.defineProperty(new Error("cannot set null value for type attribute"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+            }
+            return this;
+        }
+    }
+    input.JSButton = JSButton;
+    JSButton["__class"] = "framework.components.input.JSButton";
+    JSButton["__interfaces"] = ["framework.components.api.Renderable"];
+})(input || (input = {}));
+(function (input) {
+    /**
+     * Creates a new instance of form with the specified name
+     * @param {string} name - The name of the form
+     * @class
+     * @extends JSContainer
+     * @author Kureem Rossaye
+     */
+    class JSForm extends JSContainer {
+        constructor(name) {
+            super(name, "form");
+            this.validationerrors = new Object();
+            this.addEventListener(new JSForm.JSForm$0(this), "submit");
+            this.addEventListener(new JSForm.JSForm$1(this), "reset");
+        }
+        /**
+         * returns an array of advanced specific supported event listener<br>
+         * <ul>
+         * <li>beforeValidate - Fired before validating the form</li>
+         * <li>afterValidate  - Fired after the form is validated </li>
+         * <li>beforeSetData  - Fired before setting data into the input fields of the form</li>
+         * <li>afterSetData   - Fired after setting data  into the input fields of the form</li>
+         * <li>beforeGetData  - Fired before retrieving data from the input fields of the form</li>
+         * <li>afterGetData   - Fired after  retrieving data from the input fields of the form</li>
+         * <li>onError        - Fired if there is one or more errors after validating the form</li>
+         * <li>beforeSubmit   - Fired before submitting the form</li>
+         * <li>afterSubmit    - Fired after submitting the form even if the form is not valid</li>
+         * <li>onSubmit         - Fired on submitting the form and if there is no error after validation</li>
+         * <li>onReset          - Fired when the form is reset</li>
+         * </ul>
+         * @return {java.lang.String[]}
+         */
+        advancedEventTypes() {
+            return ["beforeValidate", "afterValidate", "beforeSetData", "afterSetData", "beforeGetData", "onError", "afterGetData", "beforeSubmit", "afterSubmit", "onSubmit", "onReset"];
+        }
+        /**
+         * Return whether the form is valid of not after validating it.<br> If the form has not been validated yet,
+         * this method will return true
+         * @return {boolean} - Whether the form is valid or not
+         */
+        isValid() {
+            return Object.keys(this.validationerrors).length <= 0;
+        }
+        /**
+         * Returns whether this form has errors or not after validating it<br> If the form has not been validated yet,
+         * this method will return false
+         * @return {boolean} - Whether this form has errors or not
+         */
+        hasErrors() {
+            return !this.isValid();
+        }
+        /**
+         *
+         * @param {string} binding - The name or binding of the input element in the form
+         * @return {api.ValidationException} - The validation exception if any for the specified binding of the form element
+         */
+        getError(binding) {
+            return this.validationerrors[binding];
+        }
+        /**
+         *
+         * @return {Object} - All errors found after validating this form
+         */
+        getErrors() {
+            return this.validationerrors;
+        }
+        /**
+         *
+         * @param {string} binding - The binding or name of the input field to search for
+         * @return {*} - The input field having specified name or binding
+         */
+        getField(binding) {
+            const result = (new Array());
+            util.ComponentUtil.visit(this, new JSForm.JSForm$2(this, binding, result));
+            if (result.length > 0) {
+                return result[0];
+            }
+            return null;
+        }
+        /**
+         * Validates all fields in this form and returns whether there is any error in the form<br>
+         * The following chain of event will be fired when this method is called:<br>
+         * <ul>
+         * <li>beforeValidate</li>
+         * <li>onError - only if there is any error in the form</li>
+         * <li>afterValidate</li>
+         * </ul>
+         * @return {boolean} - Whether there is any error in the form
+         */
+        validate() {
+            const evt = new CustomEvent("beforeValidate");
+            evt["source"] = this;
+            this.fireListener("beforeValidate", evt);
+            this.validationerrors = new Object();
+            util.ComponentUtil.visit(this, new JSForm.JSForm$3(this));
+            if (Object.keys(this.validationerrors).length > 0) {
+                const onError = new CustomEvent("onError");
+                onError["source"] = this;
+                onError["data"] = this.validationerrors;
+                onError["errors"] = this.validationerrors;
+                onError["hasError"] = Object.keys(this.validationerrors).length > 0;
+                this.fireListener("onError", onError);
+            }
+            const evtAfter = new CustomEvent("afterValidate");
+            evtAfter["source"] = this;
+            evtAfter["data"] = this.validationerrors;
+            evtAfter["errors"] = this.validationerrors;
+            evtAfter["hasError"] = Object.keys(this.validationerrors).length > 0;
+            this.fireListener("afterValidate", evtAfter);
+            return Object.keys(this.validationerrors).length <= 0;
+        }
+        /**
+         * Injects data into the fields of the form.<br>
+         * each property of the form should be the binding of the input field<br>
+         * If for a field in the form, corresponding property is not found in the specified data,
+         * the field will be cleared and its value set to null<br>
+         * The following chain of event is fired when this method is called:<br>
+         * <ul>
+         * <li>beforeSetData</li>
+         * <li>afterSetData</li>
+         * </ul>
+         *
+         * @param {Object} data - The data to inject into the form
+         */
+        setData(data) {
+            const evt = new CustomEvent("beforeSetData");
+            evt["source"] = this;
+            evt["data"] = data;
+            this.fireListener("beforeSetData", evt);
+            util.ComponentUtil.visit(this, new JSForm.JSForm$4(this, data));
+            const evtAfter = new CustomEvent("afterSetData");
+            evtAfter["source"] = this;
+            evtAfter["data"] = data;
+            this.fireListener("afterSetData", evtAfter);
+        }
+        /**
+         * Retrieves data from all the fields in this form<br>
+         * The following chain of event is fired when this method is called:<br>
+         * <ul>
+         * <li>beforeGetData</li>
+         * <li>afterGetData</li>
+         * </ul>
+         * @return {Object} - The data from all the fields in the form
+         */
+        getData() {
+            const evt = new CustomEvent("beforeGetData");
+            evt["source"] = this;
+            this.fireListener("beforeGetData", evt);
+            const data = new Object();
+            util.ComponentUtil.visit(this, new JSForm.JSForm$5(this, data));
+            const evtAfter = new CustomEvent("afterGetData");
+            evtAfter["source"] = this;
+            evtAfter["data"] = data;
+            this.fireListener("afterGetData", evtAfter);
+            return data;
+        }
+        /**
+         * Resets the form by clearing all the fields in the form<br>
+         * This method is called automatically when the form is reset for example by clicking an input of type reset present in the form<br>
+         * or by resetting it using javascript means.<br>
+         * The onReset event is fired when this method is called
+         *
+         */
+        reset() {
+            const data = new Object();
+            this.setData(data);
+            const on = new CustomEvent("onReset");
+            on["source"] = this;
+            on["data"] = data;
+            this.fireListener("onReset", on);
+        }
+        /**
+         * Submits the form.<br>
+         * This method is called automatically when the form is submitted for example by clicking an input of type submit present
+         * in the form or by submitting the form using javascript.<br>
+         * When this method is called, the form is validated, then the getData method is called.<br>
+         * The following chain of event is fired when this method is called
+         * <ul>
+         * <li>beforeSubmit event is fired</li>
+         * <li>
+         * validate method is called
+         * <ul>
+         * <li>beforeValidate event is fired</li>
+         * <li>onError event is fired only if there is any error in the form</li>
+         * <li>afterValidate event is fired</li>
+         * </ul>
+         * </li>
+         * <li>
+         * if form is valid, getData method is called
+         * <ul>
+         * <li>beforeGetData event is fired</li>
+         * <li>afterGetData event is fired</li>
+         * </ul>
+         * </li>
+         * <li>if form is valid onSubmit event is fired</li>
+         * <li>Whether or not form is valid, afterSubmit event is fired</li>
+         * </ul>
+         *
+         */
+        submit() {
+            const evt = new CustomEvent("beforeSubmit");
+            evt["source"] = this;
+            this.fireListener("beforeSubmit", evt);
+            if (this.validate()) {
+                const data = this.getData();
+                const on = new CustomEvent("onSubmit");
+                on["source"] = this;
+                on["data"] = data;
+                this.fireListener("onSubmit", on);
+            }
+            const evtAfter = new CustomEvent("afterSubmit");
+            evtAfter["source"] = this;
+            this.fireListener("afterSubmit", evtAfter);
+        }
+    }
+    input.JSForm = JSForm;
+    JSForm["__class"] = "framework.components.input.JSForm";
+    JSForm["__interfaces"] = ["framework.components.api.Renderable"];
+    (function (JSForm) {
+        class JSForm$0 {
+            constructor(__parent) {
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source, evt) {
+                this.__parent.submit();
+            }
+        }
+        JSForm.JSForm$0 = JSForm$0;
+        JSForm$0["__interfaces"] = ["framework.components.api.EventListener"];
+        class JSForm$1 {
+            constructor(__parent) {
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source, evt) {
+                this.__parent.reset();
+            }
+        }
+        JSForm.JSForm$1 = JSForm$1;
+        JSForm$1["__interfaces"] = ["framework.components.api.EventListener"];
+        class JSForm$2 {
+            constructor(__parent, binding, result) {
+                this.binding = binding;
+                this.result = result;
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {*} designable
+             */
+            doVisit(designable) {
+                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
+                    try {
+                        const b = designable.getBinding();
+                        if (b === this.binding) {
+                            this.result.push(designable);
+                        }
+                    }
+                    catch (e) {
+                        let binding = designable.getBinding();
+                        if (binding == null || binding.trim() === "") {
+                            binding = designable.getName();
+                        }
+                        this.__parent.validationerrors[binding] = e;
+                    }
+                }
+            }
+        }
+        JSForm.JSForm$2 = JSForm$2;
+        JSForm$2["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
+        class JSForm$3 {
+            constructor(__parent) {
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {*} designable
+             */
+            doVisit(designable) {
+                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
+                    try {
+                        designable.validate();
+                    }
+                    catch (e) {
+                        let binding = designable.getBinding();
+                        if (binding == null || binding.trim() === "") {
+                            binding = designable.getName();
+                        }
+                        this.__parent.validationerrors[binding] = e;
+                    }
+                }
+            }
+        }
+        JSForm.JSForm$3 = JSForm$3;
+        JSForm$3["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
+        class JSForm$4 {
+            constructor(__parent, data) {
+                this.data = data;
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {*} designable
+             */
+            doVisit(designable) {
+                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
+                    let binding = designable.getBinding();
+                    if (binding == null || binding.trim() === "") {
+                        binding = designable.getName();
+                    }
+                    if (util.PropertyUtil.hasOwnProperty(this.data, binding)) {
+                        const obj = util.PropertyUtil.getValue(this.data, binding);
+                        if (designable != null && designable instanceof input.JSDateInput) {
+                            try {
+                                if (obj != null && obj instanceof Date) {
+                                    designable.setValue(obj);
+                                }
+                                else {
+                                    const date = new Date(/* parseLong */ parseInt(obj.toString()));
+                                    designable.setValue(date);
+                                }
+                            }
+                            catch (e) {
+                                designable.setValue(obj);
+                            }
+                        }
+                        else {
+                            designable.setValue(obj);
+                        }
+                    }
+                    else {
+                        designable.setValue(null);
+                    }
+                }
+            }
+        }
+        JSForm.JSForm$4 = JSForm$4;
+        JSForm$4["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
+        class JSForm$5 {
+            constructor(__parent, data) {
+                this.data = data;
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {*} designable
+             */
+            doVisit(designable) {
+                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
+                    let binding = designable.getBinding();
+                    if (binding == null || binding.trim() === "") {
+                        binding = designable.getName();
+                    }
+                    const value = designable.getValue();
+                    util.PropertyUtil.setValue(this.data, value, binding);
+                }
+            }
+        }
+        JSForm.JSForm$5 = JSForm$5;
+        JSForm$5["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
+    })(JSForm = input.JSForm || (input.JSForm = {}));
+})(input || (input = {}));
+(function (input) {
+    class JSInput extends JSContainer {
         constructor(name) {
             super(name, "input");
-            this.validators = (new Array());
-        }
-        addValidator(validator) {
-            this.validators.push(validator);
         }
         setSize(size) {
             this.setAttribute("size", size + "");
@@ -2560,48 +3107,6 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
         }
         /**
          *
-         * @param {string} msg
-         * The message to add in the validation context
-         * @param {ValidityState} state
-         * The ValidityState returned
-         * @param {api.ValidationException} e
-         * The validation exception to add to error context
-         * @return {api.ValidationException} The current instance of the {@link ValidationException}
-         */
-        static addError(msg, state, e) {
-            if (!state.valid) {
-                if (state.badInput) {
-                    api.ValidationException.addError(msg, api.ValidationException.badInput, e);
-                }
-                else if (state.customError) {
-                    api.ValidationException.addError(msg, api.ValidationException.customError, e);
-                }
-                else if (state.patternMismatch) {
-                    api.ValidationException.addError(msg, api.ValidationException.patternMismatch, e);
-                }
-                else if (state.rangeOverflow) {
-                    api.ValidationException.addError(msg, api.ValidationException.rangeOverflow, e);
-                }
-                else if (state.rangeUnderflow) {
-                    api.ValidationException.addError(msg, api.ValidationException.rangeUnderflow, e);
-                }
-                else if (state.stepMismatch) {
-                    api.ValidationException.addError(msg, api.ValidationException.stepMismatch, e);
-                }
-                else if (state.tooLong) {
-                    api.ValidationException.addError(msg, api.ValidationException.tooLong, e);
-                }
-                else if (state.typeMismatch) {
-                    api.ValidationException.addError(msg, api.ValidationException.typeMismatch, e);
-                }
-                else if (state.valueMissing) {
-                    api.ValidationException.addError(msg, api.ValidationException.valueMissing, e);
-                }
-            }
-            return e;
-        }
-        /**
-         *
          */
         validate() {
             let valid = true;
@@ -2611,17 +3116,7 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
                 const el = nat;
                 valid = el.checkValidity();
                 if (!valid) {
-                    AbstractJSInput.addError(el.validationMessage, el.validity, e);
-                }
-            }
-            for (let index172 = 0; index172 < this.validators.length; index172++) {
-                let v = this.validators[index172];
-                {
-                    const b = v.validate(this);
-                    if (!b) {
-                        valid = false;
-                        api.ValidationException.addError(v.getErrorMessage(), api.ValidationException.customError, e);
-                    }
+                    api.ValidationException.throwError$java_lang_String$jsweet_dom_ValidityState(el.validationMessage, el.validity);
                 }
             }
             const validate = new CustomEvent("validate");
@@ -2644,461 +3139,104 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
             this.setAttribute("binding", binding);
             return this;
         }
-    }
-    input.AbstractJSInput = AbstractJSInput;
-    AbstractJSInput["__class"] = "framework.components.input.AbstractJSInput";
-    AbstractJSInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
-})(input || (input = {}));
-(function (input) {
-    class Form extends JSContainer {
-        constructor(name) {
-            super(name, "form");
-            this.validationerrors = new Object();
-        }
         /**
          *
-         * @return {java.lang.String[]}
-         */
-        advancedEventTypes() {
-            return ["beforeValidate", "afterValidate", "beforeSetData", "afterSetData", "beforeGetData", "onError", "afterSetData", "beforeSubmit", "afterSubmit", "submit"];
-        }
-        isValid() {
-            return Object.keys(this.validationerrors).length <= 0;
-        }
-        hasErrors() {
-            const keys = Object.keys(this.validationerrors);
-            if (keys != null && keys.length > 0) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        getError(binding) {
-            return this.validationerrors[binding];
-        }
-        getErrors() {
-            return this.validationerrors;
-        }
-        getField(binding) {
-            const result = (new Array());
-            util.ComponentUtil.visit(this, new Form.Form$0(this, binding, result));
-            if (result.length > 0) {
-                return result[0];
-            }
-            return null;
-        }
-        validate() {
-            const evt = new CustomEvent("beforeValidate");
-            evt["source"] = this;
-            this.fireListener("beforeValidate", evt);
-            this.validationerrors = new Object();
-            util.ComponentUtil.visit(this, new Form.Form$1(this));
-            const evtAfter = new CustomEvent("afterValidate");
-            evtAfter["source"] = this;
-            evtAfter["data"] = this.validationerrors;
-            evtAfter["errors"] = this.validationerrors;
-            evtAfter["hasError"] = Object.keys(this.validationerrors).length > 0;
-            this.fireListener("afterValidate", evtAfter);
-            if (Object.keys(this.validationerrors).length > 0) {
-                const onError = new CustomEvent("onError");
-                onError["source"] = this;
-                onError["data"] = this.validationerrors;
-                onError["errors"] = this.validationerrors;
-                onError["hasError"] = Object.keys(this.validationerrors).length > 0;
-                this.fireListener("onError", onError);
-            }
-            return Object.keys(this.validationerrors).length <= 0;
-        }
-        setData(data) {
-            const evt = new CustomEvent("beforeSetData");
-            evt["source"] = this;
-            evt["data"] = data;
-            this.fireListener("beforeSetData", evt);
-            util.ComponentUtil.visit(this, new Form.Form$2(this, data));
-            const evtAfter = new CustomEvent("afterSetData");
-            evtAfter["source"] = this;
-            evtAfter["data"] = data;
-            this.fireListener("afterSetData", evtAfter);
-        }
-        getData() {
-            const evt = new CustomEvent("beforeGetData");
-            evt["source"] = this;
-            this.fireListener("beforeGetData", evt);
-            const data = new Object();
-            util.ComponentUtil.visit(this, new Form.Form$3(this, data));
-            const evtAfter = new CustomEvent("afterGetData");
-            evtAfter["source"] = this;
-            evtAfter["data"] = data;
-            this.fireListener("afterGetData", evtAfter);
-            return data;
-        }
-        submit() {
-            const evt = new CustomEvent("beforeSubmit");
-            evt["source"] = this;
-            this.fireListener("beforeSubmit", evt);
-            if (this.validate()) {
-                const data = this.getData();
-                const on = new CustomEvent("submit");
-                on["source"] = this;
-                on["data"] = data;
-                this.fireListener("submit", on);
-            }
-            const evtAfter = new CustomEvent("afterSubmit");
-            evtAfter["source"] = this;
-            this.fireListener("afterSubmit", evtAfter);
-        }
-    }
-    input.Form = Form;
-    Form["__class"] = "framework.components.input.Form";
-    Form["__interfaces"] = ["framework.components.api.Renderable"];
-    (function (Form) {
-        class Form$0 {
-            constructor(__parent, binding, result) {
-                this.binding = binding;
-                this.result = result;
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} designable
-             */
-            doVisit(designable) {
-                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
-                    try {
-                        const b = designable.getBinding();
-                        if (b === this.binding) {
-                            this.result.push(designable);
-                        }
-                    }
-                    catch (e) {
-                        let binding = designable.getBinding();
-                        if (binding == null || binding.trim() === "") {
-                            binding = designable.getName();
-                        }
-                        this.__parent.validationerrors[binding] = e;
-                    }
-                }
-            }
-        }
-        Form.Form$0 = Form$0;
-        Form$0["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
-        class Form$1 {
-            constructor(__parent) {
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} designable
-             */
-            doVisit(designable) {
-                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
-                    try {
-                        designable.validate();
-                    }
-                    catch (e) {
-                        let binding = designable.getBinding();
-                        if (binding == null || binding.trim() === "") {
-                            binding = designable.getName();
-                        }
-                        this.__parent.validationerrors[binding] = e;
-                    }
-                }
-            }
-        }
-        Form.Form$1 = Form$1;
-        Form$1["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
-        class Form$2 {
-            constructor(__parent, data) {
-                this.data = data;
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} designable
-             */
-            doVisit(designable) {
-                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
-                    let binding = designable.getBinding();
-                    if (binding == null || binding.trim() === "") {
-                        binding = designable.getName();
-                    }
-                    if (util.PropertyUtil.hasOwnProperty(this.data, binding)) {
-                        const obj = util.PropertyUtil.getValue(this.data, binding);
-                        if (designable != null && designable instanceof input.JSDateInput) {
-                            try {
-                                if (obj != null && obj instanceof Date) {
-                                    designable.setValue(obj);
-                                }
-                                else {
-                                    const date = new Date(/* parseLong */ parseInt(obj.toString()));
-                                    designable.setValue(date);
-                                }
-                            }
-                            catch (e) {
-                                designable.setValue(obj);
-                            }
-                        }
-                        else {
-                            designable.setValue(obj);
-                        }
-                    }
-                    else {
-                        designable.setValue(null);
-                    }
-                }
-            }
-        }
-        Form.Form$2 = Form$2;
-        Form$2["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
-        class Form$3 {
-            constructor(__parent, data) {
-                this.data = data;
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} designable
-             */
-            doVisit(designable) {
-                if (designable != null && (designable.constructor != null && designable.constructor["__interfaces"] != null && designable.constructor["__interfaces"].indexOf("framework.components.api.InputField") >= 0)) {
-                    let binding = designable.getBinding();
-                    if (binding == null || binding.trim() === "") {
-                        binding = designable.getName();
-                    }
-                    const value = designable.getValue();
-                    util.PropertyUtil.setValue(this.data, value, binding);
-                }
-            }
-        }
-        Form.Form$3 = Form$3;
-        Form$3["__interfaces"] = ["framework.components.util.ComponentUtil.ComponentVisitor"];
-    })(Form = input.Form || (input.Form = {}));
-})(input || (input = {}));
-(function (input) {
-    class JSImageInput extends JSContainer {
-        constructor(name) {
-            super(name, "div");
-            this.image = new JSContainer("image", "img");
-            this.upload = new JSUpload("upload", util.PropertyUtil.REMOTESERVER + "/resources/upload");
-            this.imageContainer = new JSContainer("div");
-            this.validators = (new Array());
-            this.setAttribute("identifier", "lgt:image-input");
-            this.addClass("slds-image-input");
-            this.addChild$framework_components_api_Renderable(this.imageContainer);
-            this.imageContainer.addChild$framework_components_api_Renderable(this.image);
-            this.decorateImage();
-            this.addChild$framework_components_api_Renderable(this.upload);
-            this.upload.setVisible(false);
-            this.upload.setStyle("position", "absolute");
-            this.setStyle("position", "relative");
-            this.upload.addEventListener(new JSImageInput.JSImageInput$0(this), "success");
-            this.upload.addEventListener(new JSImageInput.JSImageInput$1(this), "error");
-        }
-        refreshUploadDir() {
-            let dir = this.getAttribute("uploadDir");
-            const name = this.getName();
-            if (dir == null) {
-                dir = "default";
-            }
-            this.upload.setUrl(util.PropertyUtil.REMOTESERVER + "/resources/upload?dir=" + dir + "&name=" + name);
-        }
-        getImage() {
-            return this.image;
-        }
-        setRequired(b) {
-            if (b) {
-                this.setAttribute("required", "true");
-            }
-            else
-                this.setAttribute("required", null);
-            return this;
-        }
-        setDisabled(b) {
-            if (b) {
-                this.setAttribute("disabled", "true");
-            }
-            else {
-                this.setAttribute("disabled", null);
-            }
-            return this;
-        }
-        setReadOnly(b) {
-            if (b) {
-                this.setAttribute("readonly", "true");
-            }
-            else {
-                this.setAttribute("readonly", null);
-            }
-            return this;
-        }
-        decorateImage() {
-            this.image.addEventListener(new JSImageInput.JSImageInput$2(this), "click");
-        }
-        /**
-         *
-         * @return {string}
-         */
-        getValue() {
-            return this.image.getAttribute("src");
-        }
-        setValue$java_lang_String(val) {
-            if (val == null) {
-                this.image.setAttribute("src", this.getAttribute("default"));
-            }
-            else {
-                this.image.setAttribute("src", val);
-            }
-        }
-        /**
-         *
-         * @param {string} val
-         */
-        setValue(val) {
-            if (((typeof val === 'string') || val === null)) {
-                return this.setValue$java_lang_String(val);
-            }
-            else
-                throw new Error('invalid overload');
-        }
-        /**
-         *
-         */
-        validate() {
-            let valid = true;
-            const e = new api.ValidationException();
-            for (let index173 = 0; index173 < this.validators.length; index173++) {
-                let v = this.validators[index173];
-                {
-                    const b = v.validate(this);
-                    if (!b) {
-                        valid = false;
-                        api.ValidationException.addError(v.getErrorMessage(), api.ValidationException.customError, e);
-                    }
-                }
-            }
-            const validate = new CustomEvent("validate");
-            validate["errors"] = e.errors;
-            validate["valid"] = valid;
-            validate["source"] = this;
-            this.fireListener("validate", validate);
-            if (!valid) {
-                throw e;
-            }
-        }
-        /**
-         *
-         * @return {string}
-         */
-        getBinding() {
-            return this.getAttribute("binding");
-        }
-        /**
-         *
-         * @param {string} binding
          * @return {*}
          */
-        setBinding(binding) {
-            this.setAttribute("binding", binding);
-            return this;
+        getValue() {
+            const inp = this.getNative();
+            if (inp != null)
+                return inp.value;
+            else
+                return this.getAttribute("value");
         }
         /**
          *
-         * @return {java.lang.String[]}
+         * @param {*} val
          */
-        advancedEventTypes() {
-            return ["success", "error"];
+        setValue(val) {
+            const inp = this.getNative();
+            if (inp != null)
+                inp.value = val;
+            this.setAttribute("text", val);
         }
     }
-    input.JSImageInput = JSImageInput;
-    JSImageInput["__class"] = "framework.components.input.JSImageInput";
-    JSImageInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
-    (function (JSImageInput) {
-        class JSImageInput$0 {
-            constructor(__parent) {
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} source
-             * @param {Event} evt
-             */
-            performAction(source, evt) {
-                if (this.__parent.hasListenerOfType("success")) {
-                    this.__parent.fireListener("success", evt);
-                }
-                else {
-                    const data = evt["data"];
-                    if (data != null && data.hasOwnProperty("url")) {
-                        const url = data["url"];
-                        this.__parent.setValue(url);
-                        this.__parent.render();
-                    }
-                    else {
-                        console.warn("no action taken although upload of image was successfull. You may consider adding a success event to this component");
-                    }
-                }
-            }
-        }
-        JSImageInput.JSImageInput$0 = JSImageInput$0;
-        JSImageInput$0["__interfaces"] = ["framework.components.api.EventListener"];
-        class JSImageInput$1 {
-            constructor(__parent) {
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} source
-             * @param {Event} evt
-             */
-            performAction(source, evt) {
-                this.__parent.fireListener("error", evt);
-            }
-        }
-        JSImageInput.JSImageInput$1 = JSImageInput$1;
-        JSImageInput$1["__interfaces"] = ["framework.components.api.EventListener"];
-        class JSImageInput$2 {
-            constructor(__parent) {
-                this.__parent = __parent;
-            }
-            /**
-             *
-             * @param {*} source
-             * @param {Event} evt
-             */
-            performAction(source, evt) {
-                this.__parent.upload.triggerUpload();
-            }
-        }
-        JSImageInput.JSImageInput$2 = JSImageInput$2;
-        JSImageInput$2["__interfaces"] = ["framework.components.api.EventListener"];
-    })(JSImageInput = input.JSImageInput || (input.JSImageInput = {}));
+    input.JSInput = JSInput;
+    JSInput["__class"] = "framework.components.input.JSInput";
+    JSInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
 (function (input) {
+    /**
+     * Creates a new instance of {@link JSOption} with the specified text and value
+     * @param {string} text - The text to display for the option
+     * @param {string} value - the value of the option
+     * @class
+     * @extends JSContainer
+     * @author Kureem Rossaye
+     */
     class JSOption extends JSContainer {
         constructor(text, value) {
             super("option");
             this.setAttribute("value", value);
             this.setHtml(text);
         }
+        /**
+         * The value of the option
+         * @return {string} - The value of the option
+         */
         getValue() {
             return this.getAttribute("value");
         }
+        /**
+         * Sets the value of the option
+         * @param {string} value - The value of the option
+         */
         setValue(value) {
             this.setAttribute("value", value);
         }
+        /**
+         *
+         * @return {string} - The text of the option
+         */
         getText() {
             return this.getHtml();
         }
-        setText(label) {
-            this.setHtml(label);
+        /**
+         * Sets the text or label of the option
+         * @param {string} text - The text of the option
+         */
+        setText(text) {
+            this.setHtml(text);
         }
+        /**
+         * Mark or unmark this option as selected
+         * @param {boolean} b - Whether to select or not select this option
+         */
         setSelected(b) {
             if (b) {
                 this.setAttribute("selected", "true");
             }
             else {
                 this.setAttribute("selected", null);
+            }
+        }
+        /**
+         *
+         * @return {boolean} - Whether this option is selected or not
+         */
+        isSelected() {
+            const opt = this.getNative();
+            if (opt != null) {
+                return opt.selected;
+            }
+            else {
+                const attr = this.getAttribute("selected");
+                if (attr != null && attr === "true") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         }
     }
@@ -3113,19 +3251,14 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
             if (this.previousValue === undefined) {
                 this.previousValue = null;
             }
-            this.validators = (new Array());
             if (this.data === undefined) {
                 this.data = null;
             }
-            this.setAttribute("identifier", "html:select");
-        }
-        addValidator(validator) {
-            this.validators.push(validator);
         }
         setOptions$java_lang_String(options) {
             const opts = options.split("\n");
-            for (let index174 = 0; index174 < opts.length; index174++) {
-                let opt = opts[index174];
+            for (let index171 = 0; index171 < opts.length; index171++) {
+                let opt = opts[index171];
                 {
                     this.addOption$java_lang_String$java_lang_String(opt, opt);
                 }
@@ -3241,8 +3374,8 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
             if (ele != null) {
                 if (ele.multiple) {
                     const result = (new Array());
-                    for (let index175 = 0; index175 < ele.children.length; index175++) {
-                        let e = ele.children[index175];
+                    for (let index172 = 0; index172 < ele.children.length; index172++) {
+                        let e = ele.children[index172];
                         {
                             const opt = e;
                             if (opt.selected)
@@ -3258,9 +3391,9 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
             else {
                 const val = this.getAttribute("value");
                 {
-                    let array177 = this.getChildren();
-                    for (let index176 = 0; index176 < array177.length; index176++) {
-                        let opt = array177[index176];
+                    let array174 = this.getChildren();
+                    for (let index173 = 0; index173 < array174.length; index173++) {
+                        let opt = array174[index173];
                         {
                             if (opt.getAttribute("value") === val) {
                                 return opt.getValue();
@@ -3298,13 +3431,13 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
                 }
                 this.setAttribute("value", firstVal);
                 {
-                    let array179 = this.getChildren();
-                    for (let index178 = 0; index178 < array179.length; index178++) {
-                        let opt = array179[index178];
+                    let array176 = this.getChildren();
+                    for (let index175 = 0; index175 < array176.length; index175++) {
+                        let opt = array176[index175];
                         {
                             opt.setSelected(false);
-                            for (let index180 = 0; index180 < arrVal.length; index180++) {
-                                let val = arrVal[index180];
+                            for (let index177 = 0; index177 < arrVal.length; index177++) {
+                                let val = arrVal[index177];
                                 {
                                     if (opt.getAttribute("value") === val) {
                                         opt.setSelected(true);
@@ -3317,9 +3450,9 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
             }
             else {
                 {
-                    let array182 = this.getChildren();
-                    for (let index181 = 0; index181 < array182.length; index181++) {
-                        let opt = array182[index181];
+                    let array179 = this.getChildren();
+                    for (let index178 = 0; index178 < array179.length; index178++) {
+                        let opt = array179[index178];
                         {
                             opt.setSelected(false);
                         }
@@ -3346,17 +3479,7 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
                 const el = nat;
                 valid = el.checkValidity();
                 if (!valid) {
-                    input.AbstractJSInput.addError(el.validationMessage, el.validity, e);
-                }
-            }
-            for (let index183 = 0; index183 < this.validators.length; index183++) {
-                let v = this.validators[index183];
-                {
-                    const b = v.validate(this);
-                    if (!b) {
-                        valid = false;
-                        api.ValidationException.addError(v.getErrorMessage(), api.ValidationException.customError, e);
-                    }
+                    api.ValidationException.throwError$java_lang_String$jsweet_dom_ValidityState(el.validationMessage, el.validity);
                 }
             }
             const validate = new CustomEvent("validate");
@@ -3381,8 +3504,8 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
         setData(data_) {
             this.clearChildren();
             this.setRendered(false);
-            for (let index184 = 0; index184 < data_.length; index184++) {
-                let o = data_[index184];
+            for (let index180 = 0; index180 < data_.length; index180++) {
+                let o = data_[index180];
                 {
                     if (o.hasOwnProperty("value")) {
                         const value = o["value"];
@@ -3405,9 +3528,9 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
             const result = (new Array());
             if (this.isMultiple()) {
                 {
-                    let array186 = obj;
-                    for (let index185 = 0; index185 < array186.length; index185++) {
-                        let o = array186[index185];
+                    let array182 = obj;
+                    for (let index181 = 0; index181 < array182.length; index181++) {
+                        let o = array182[index181];
                         {
                             const item = this.findItem(o);
                             if (item != null) {
@@ -3432,8 +3555,8 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
         }
         findItem(value) {
             if (this.data != null) {
-                for (let index187 = 0; index187 < this.data.length; index187++) {
-                    let o = this.data[index187];
+                for (let index183 = 0; index183 < this.data.length; index183++) {
+                    let o = this.data[index183];
                     {
                         let val = o["value"];
                         val = val + "";
@@ -3464,11 +3587,6 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
     class JSTextArea extends JSContainer {
         constructor(name) {
             super(name, "textarea");
-            this.validators = (new Array());
-            this.setAttribute("identifier", "html:textarea");
-        }
-        addValidator(validator) {
-            this.validators.push(validator);
         }
         setRequired(b) {
             if (b) {
@@ -3527,17 +3645,7 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
                 const el = nat;
                 valid = el.checkValidity();
                 if (!valid) {
-                    input.AbstractJSInput.addError(el.validationMessage, el.validity, e);
-                }
-            }
-            for (let index188 = 0; index188 < this.validators.length; index188++) {
-                let v = this.validators[index188];
-                {
-                    const b = v.validate(this);
-                    if (!b) {
-                        valid = false;
-                        api.ValidationException.addError(v.getErrorMessage(), api.ValidationException.customError, e);
-                    }
+                    api.ValidationException.throwError$java_lang_String$jsweet_dom_ValidityState(el.validationMessage, el.validity);
                 }
             }
             const validate = new CustomEvent("validate");
@@ -3582,51 +3690,38 @@ HTMLTemplateContainer["__interfaces"] = ["framework.components.api.Renderable", 
     JSTextArea["__class"] = "framework.components.input.JSTextArea";
     JSTextArea["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
-class RestWebservice extends JSContainer {
-    constructor(name) {
-        if (((typeof name === 'string') || name === null)) {
-            let __args = arguments;
-            super(name);
-            this.setAttribute("method", "GET");
-        }
-        else if (name === undefined) {
-            let __args = arguments;
-            {
-                let __args = arguments;
-                let name = "rw";
-                super(name);
-                this.setAttribute("method", "GET");
-            }
-        }
-        else
-            throw new Error('invalid overload');
-    }
-}
-RestWebservice["__class"] = "framework.components.RestWebservice";
-RestWebservice["__interfaces"] = ["framework.components.api.Renderable"];
-class Row extends JSContainer {
-    constructor(name) {
-        super(name, "div");
-        this.addClass("row");
-        this.addCSSRule(".row{display:table;padding:10px;width:100%;}");
-    }
-}
-Row["__class"] = "framework.components.Row";
-Row["__interfaces"] = ["framework.components.api.Renderable"];
 (function (table) {
+    /**
+     * Renders a table
+     *
+     * @author Kureem Rossaye
+     * @param {string} name
+     * @class
+     * @extends JSContainer
+     */
     class Table extends JSContainer {
         constructor(name) {
             super(name, "table");
-            this.head = new JSContainer("head", "thead");
-            this.body = new JSContainer("body", "tbody");
-            if (this.dataModel === undefined) {
-                this.dataModel = null;
-            }
-            if (this.columnModel === undefined) {
-                this.columnModel = null;
-            }
+            this.head = new table.TableHead("head", this);
+            this.body = new table.TableBody("body", this);
             this.addChild$framework_components_api_Renderable(this.head);
             this.addChild$framework_components_api_Renderable(this.body);
+        }
+        fireOnClickRow(row, rowIndex) {
+            const clickRow = new CustomEvent("clickRow");
+            clickRow["source"] = row;
+            clickRow["table"] = this;
+            clickRow["rowIndex"] = rowIndex;
+            clickRow["index"] = rowIndex;
+            this.fireListener("clickRow", clickRow);
+        }
+        fireOnDblClickRow(row, rowIndex) {
+            const clickRow = new CustomEvent("dblClickRow");
+            clickRow["source"] = row;
+            clickRow["table"] = this;
+            clickRow["rowIndex"] = rowIndex;
+            clickRow["index"] = rowIndex;
+            this.fireListener("dblClickRow", clickRow);
         }
         getHead() {
             return this.head;
@@ -3635,50 +3730,65 @@ Row["__interfaces"] = ["framework.components.api.Renderable"];
             return this.body;
         }
         getDataModel() {
-            return this.dataModel;
+            return this.body.getModel();
         }
         setDataModel(dataModel) {
-            this.dataModel = dataModel;
+            this.body.setModel(dataModel);
         }
         getColumnModel() {
-            return this.columnModel;
+            return this.head.getModel();
         }
         setColumnModel(columnModel) {
-            this.columnModel = columnModel;
+            this.head.setModel(columnModel);
         }
         refresh() {
-            this.head.clearChildren();
-            this.body.clearChildren();
-            if (this.columnModel != null) {
-                const hrow = new JSContainer("headerRow", "tr");
-                this.head.addChild$framework_components_api_Renderable(hrow);
-                for (let i = 0; i < this.columnModel.getColumnCount(); i++) {
-                    {
-                        const column = this.columnModel.getColumn(i);
-                        const headerRenderer = column.getHeaderRenderer();
-                        const th = new JSContainer("", "th").setAttribute("scope", "col");
-                        th.setStyle("width", column.getWidth() + "px");
-                        th.setStyle("max-width", column.getMaxWidth() + "px");
-                        th.setStyle("min-width", column.getMinWidth() + "px");
-                        hrow.addChild$framework_components_api_Renderable(th);
-                        headerRenderer.renderComponent(this, th, column.getHeaderValue(), false, false, 0, i);
-                    }
-                    ;
-                }
+            this.head.refresh();
+            this.body.refresh();
+        }
+    }
+    table.Table = Table;
+    Table["__class"] = "framework.components.table.Table";
+    Table["__interfaces"] = ["framework.components.api.Renderable"];
+})(table || (table = {}));
+(function (table_1) {
+    class TableBody extends JSContainer {
+        constructor(name, table) {
+            super(name, "tbody");
+            if (this.table === undefined) {
+                this.table = null;
             }
-            if (this.dataModel != null) {
-                for (let row = 0; row < this.dataModel.getRowCount(); row++) {
+            if (this.model === undefined) {
+                this.model = null;
+            }
+            this.table = table;
+        }
+        getModel() {
+            return this.model;
+        }
+        setModel(model) {
+            this.model = model;
+        }
+        getTable() {
+            return this.table;
+        }
+        refresh() {
+            this.clearChildren();
+            this.setRendered(false);
+            const columnModel = this.table.getHead().getModel();
+            if (this.model != null) {
+                for (let row = 0; row < this.model.getRowCount(); row++) {
                     {
                         const r = new JSContainer("", "tr");
-                        this.body.addChild$framework_components_api_Renderable(r);
-                        for (let col = 0; col < this.dataModel.getColumnCount(); col++) {
+                        r.addEventListener(new TableBody.TableBody$0(this), "click");
+                        this.addChild$framework_components_api_Renderable(r);
+                        for (let col = 0; col < this.model.getColumnCount(); col++) {
                             {
                                 const cell = new JSContainer("", "td");
                                 r.addChild$framework_components_api_Renderable(cell);
-                                const val = this.dataModel.getValueAt(row, col);
-                                if (this.columnModel != null) {
-                                    const column = this.columnModel.getColumn(col);
-                                    column.getCellRenderer().renderComponent(this, cell, val, false, false, row, col);
+                                const val = this.model.getValueAt(row, col);
+                                if (columnModel != null) {
+                                    const column = columnModel.getColumn(col);
+                                    column.getCellRenderer().renderComponent(this.table, cell, val, false, false, row, col);
                                 }
                                 else {
                                     cell.setHtml(val != null ? val.toString() : "");
@@ -3691,284 +3801,255 @@ Row["__interfaces"] = ["framework.components.api.Renderable"];
                 }
             }
         }
-    }
-    table.Table = Table;
-    Table["__class"] = "framework.components.table.Table";
-    Table["__interfaces"] = ["framework.components.api.Renderable"];
-})(table || (table = {}));
-(function (input) {
-    class JSAddressInput extends HTMLTemplateContainer {
-        constructor(name) {
-            super(name, "");
-            this.address = new Object();
-            this.country = new input.JSSelect("country");
-            this.city = new input.JSTextInput("city");
-            this.postalCode = new input.JSTextInput("postalCode");
-            this.state = new input.JSTextInput("state");
-            this.street = new input.JSTextInput("street");
-            this.addChild$framework_components_api_Renderable(this.country);
-            this.addChild$framework_components_api_Renderable(this.city);
-            this.addChild$framework_components_api_Renderable(this.postalCode);
-            this.addChild$framework_components_api_Renderable(this.state);
-            this.addChild$framework_components_api_Renderable(this.street);
-            this.city.setRequired(true);
-            this.postalCode.setRequired(true);
-            this.street.setRequired(true);
-            this.country.setRequired(true);
-        }
-        getAddress() {
-            this.address["country"] = this.country.getValue();
-            this.address["city"] = this.city.getValue();
-            this.address["postalCode"] = this.country.getValue();
-            this.address["state"] = this.state.getValue();
-            this.address["street"] = this.street.getValue();
-            return this.address;
-        }
-        setAddress(address) {
-            this.country.setValue(address["country"]);
-            this.city.setValue$java_lang_String(address["city"]);
-            this.postalCode.setValue$java_lang_String(address["postalCode"]);
-            this.state.setValue$java_lang_String(address["state"]);
-            this.street.setValue$java_lang_String(address["street"]);
-        }
         /**
          *
-         * @return {Object}
+         * @param {*} source
+         * @param {Event} evt
          */
-        getValue() {
-            return this.getAddress();
-        }
-        setValue$jsweet_lang_Object(val) {
-            this.setAddress(val);
-        }
-        /**
-         *
-         * @param {Object} val
-         */
-        setValue(val) {
-            if (((val != null && val instanceof Object) || val === null)) {
-                return this.setValue$jsweet_lang_Object(val);
-            }
-            else
-                throw new Error('invalid overload');
-        }
-        /**
-         *
-         */
-        validate() {
-            this.street.validate();
-            this.postalCode.validate();
-            this.city.validate();
-            this.country.validate();
-        }
-        /**
-         *
-         * @return {string}
-         */
-        getBinding() {
-            if (this.getAttribute("binding") == null) {
-                return this.getName();
+        performAction(source, evt) {
+            const index = (this.getChildren().indexOf(source) | 0);
+            const me = evt;
+            const type = me.type;
+            if (type === "click") {
+                this.table.fireOnClickRow(source, index);
             }
             else {
-                return this.getAttribute("binding");
+                this.table.fireOnDblClickRow(source, index);
             }
         }
-        /**
-         *
-         * @param {string} binding
-         * @return {*}
-         */
-        setBinding(binding) {
-            this.setAttribute("binding", binding);
-            return this;
-        }
-        /**
-         *
-         * @param {boolean} b
-         * @return {*}
-         */
-        setRequired(b) {
-            return this;
-        }
     }
-    input.JSAddressInput = JSAddressInput;
-    JSAddressInput["__class"] = "framework.components.input.JSAddressInput";
-    JSAddressInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable", "framework.components.api.TemplateRenderable"];
-})(input || (input = {}));
-/**
- * Create a new instance of this component
- * @param {string} name The name of the component
- * @param {string} url The url where to submit uploaded file
- * @param {string} template
- * @class
- * @extends HTMLTemplateContainer
- * @author Rossaye Abdool Kureem
- */
-class JSUpload extends HTMLTemplateContainer {
-    constructor(name, template, url) {
-        if (((typeof name === 'string') || name === null) && ((typeof template === 'string') || template === null) && ((typeof url === 'string') || url === null)) {
-            let __args = arguments;
-            super(name, template);
-            this.label = new JSContainer("label", "label");
-            this.input = new JSContainer("uploadfile", "input");
-            this.uploader = new FileUploader();
-            this.required = false;
-            this.addChild$framework_components_api_Renderable(this.label);
-            this.input.setAttribute("type", "file").setAttribute("accept", "*");
-            this.label.setHtml("Upload File:");
-            this.input.addEventListener(this, "change");
-            this.input.addClass("slds-input");
-            this.addChild$framework_components_api_Renderable(this.input);
-            this.setAttribute("url", url);
-        }
-        else if (((typeof name === 'string') || name === null) && ((typeof template === 'string') || template === null) && url === undefined) {
-            let __args = arguments;
-            let url = __args[1];
-            {
-                let __args = arguments;
-                let template = "<form>\n\t<div name=\"label\"></div>\n\t<div name=\"uploadfile\"></div>\n</form>";
-                super(name, template);
-                this.label = new JSContainer("label", "label");
-                this.input = new JSContainer("uploadfile", "input");
-                this.uploader = new FileUploader();
-                this.required = false;
-                this.addChild$framework_components_api_Renderable(this.label);
-                this.input.setAttribute("type", "file").setAttribute("accept", "*");
-                this.label.setHtml("Upload File:");
-                this.input.addEventListener(this, "change");
-                this.input.addClass("slds-input");
-                this.addChild$framework_components_api_Renderable(this.input);
-                this.setAttribute("url", url);
+    table_1.TableBody = TableBody;
+    TableBody["__class"] = "framework.components.table.TableBody";
+    TableBody["__interfaces"] = ["framework.components.api.EventListener", "framework.components.api.Renderable"];
+    (function (TableBody) {
+        class TableBody$0 {
+            constructor(__parent) {
+                this.__parent = __parent;
             }
-            this.label = new JSContainer("label", "label");
-            this.input = new JSContainer("uploadfile", "input");
-            this.uploader = new FileUploader();
-            this.required = false;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source, evt) {
+            }
         }
-        else
-            throw new Error('invalid overload');
-    }
+        TableBody.TableBody$0 = TableBody$0;
+        TableBody$0["__interfaces"] = ["framework.components.api.EventListener"];
+    })(TableBody = table_1.TableBody || (table_1.TableBody = {}));
+})(table || (table = {}));
+(function (table) {
     /**
-     * Manually opens native dialog box to select file to upload
+     * Hold all the information for the definition of a column in a <code>Table</code>
+     * @author Kureem Rossaye
+     * @param {string} name
+     * @class
+     * @extends JSContainer
      */
-    triggerUpload() {
-        this.input.getNative().click();
-    }
-    /**
-     *
-     * @return {java.lang.String[]}
-     */
-    advancedEventTypes() {
-        return ["success", "error"];
-    }
-    /**
-     * Sets a label to this component
-     * @param {string} label The label of the component
-     */
-    setLabel(label) {
-        this.label.setHtml(label);
-    }
-    /**
-     * Sets the accepts mimetypes for this component
-     * @param {string} accepts Mime types allowed to upload (e.g image/jpg, image/png, text/html etc)
-     */
-    setAccepts(accepts) {
-        this.input.setAttribute("accept", accepts);
-    }
-    /**
-     *
-     * @param {*} source
-     * @param {Event} ev
-     */
-    performAction(source, ev) {
-    }
-    /**
-     * Sets the server url where to submit file to uplaod
-     * @param {string} url Url where to submit file to upload
-     */
-    setUrl(url) {
-        this.setAttribute("url", url);
-    }
-    /**
-     * Synonymous to setUrl
-     * @param {string} url The url where to submit file to upload
-     */
-    setEndpoint(url) {
-        this.setUrl(url);
-    }
-    /**
-     *
-     * @return {Object}
-     */
-    getValue() {
-        return null;
-    }
-    setValue$jsweet_lang_Object(val) {
-    }
-    /**
-     *
-     * @param {Object} val
-     */
-    setValue(val) {
-        if (((val != null && val instanceof Object) || val === null)) {
-            return this.setValue$jsweet_lang_Object(val);
+    class TableColumn extends JSContainer {
+        constructor(name) {
+            super(name, "th");
+            if (this.modelIndex === undefined) {
+                this.modelIndex = 0;
+            }
+            if (this.identifier === undefined) {
+                this.identifier = null;
+            }
+            if (this.headerRenderer === undefined) {
+                this.headerRenderer = null;
+            }
+            if (this.headerValue === undefined) {
+                this.headerValue = null;
+            }
+            if (this.cellRenderer === undefined) {
+                this.cellRenderer = null;
+            }
+            if (this.resizable === undefined) {
+                this.resizable = false;
+            }
+            this.identifier = name;
+            this.setAttribute("scope", "col");
         }
-        else
-            throw new Error('invalid overload');
+        getModelIndex() {
+            return this.modelIndex;
+        }
+        setModelIndex(modelIndex) {
+            this.modelIndex = modelIndex;
+        }
+        getIdentifier() {
+            return this.identifier;
+        }
+        setIdentifier(identifier) {
+            this.identifier = identifier;
+        }
+        getWidth() {
+            return this.getDimensionStyle("width");
+        }
+        /*private*/ setDimensionStyle(name, value) {
+            this.setStyle(name, value + api.Units["_$wrappers"][api.Units.PIXEL].getDisplay());
+        }
+        /*private*/ getDimensionStyle(name) {
+            let stWidth = this.getStyle(name);
+            if (stWidth != null && stWidth.length > 0) {
+                {
+                    let array185 = /* Enum.values */ function () { let result = []; for (let val in api.Units) {
+                        if (!isNaN(val)) {
+                            result.push(parseInt(val, 10));
+                        }
+                    } return result; }();
+                    for (let index184 = 0; index184 < array185.length; index184++) {
+                        let u = array185[index184];
+                        {
+                            stWidth = /* replace */ stWidth.split(api.Units["_$wrappers"][u].getDisplay()).join("");
+                        }
+                    }
+                }
+                return /* parseInt */ parseInt(stWidth);
+            }
+            return null;
+        }
+        setWidth(width) {
+            this.setDimensionStyle("width", width);
+        }
+        getMinWidth() {
+            return this.getDimensionStyle("min-width");
+        }
+        setMinWidth(minWidth) {
+            this.setDimensionStyle("min-width", minWidth);
+        }
+        getMaxWidth() {
+            return this.getDimensionStyle("max-width");
+        }
+        setMaxWidth(maxWidth) {
+            this.setDimensionStyle("max-width", maxWidth);
+        }
+        getHeaderRenderer() {
+            return this.headerRenderer;
+        }
+        setHeaderRenderer(headerRenderer) {
+            this.headerRenderer = headerRenderer;
+        }
+        getHeaderValue() {
+            return this.headerValue;
+        }
+        setHeaderValue(headerValue) {
+            this.headerValue = headerValue;
+            let html = "";
+            if (headerValue != null) {
+                html = headerValue.toString();
+            }
+            this.setHtml(html);
+        }
+        getCellRenderer() {
+            return this.cellRenderer;
+        }
+        setCellRenderer(cellRenderer) {
+            this.cellRenderer = cellRenderer;
+        }
+        isResizable() {
+            return this.resizable;
+        }
+        setResizable(resizable) {
+            this.resizable = resizable;
+        }
     }
-    /**
-     *
-     */
-    validate() {
+    table.TableColumn = TableColumn;
+    TableColumn["__class"] = "framework.components.table.TableColumn";
+    TableColumn["__interfaces"] = ["framework.components.api.Renderable"];
+})(table || (table = {}));
+(function (table_2) {
+    class TableHead extends JSContainer {
+        constructor(name, table) {
+            super(name, "thead");
+            this.tableRow = new JSContainer("headerRow", "tr");
+            if (this.table === undefined) {
+                this.table = null;
+            }
+            if (this.model_ === undefined) {
+                this.model_ = null;
+            }
+            this.addChild$framework_components_api_Renderable(this.tableRow);
+            this.table = table;
+        }
+        addColumn(column) {
+            this.tableRow.addChild$framework_components_api_Renderable(column);
+            const renderer = column.getHeaderRenderer();
+            if (renderer != null) {
+                renderer.renderComponent(this.table, column, column, false, false, -1, (this.tableRow.getChildren().indexOf(column) | 0));
+            }
+            return this;
+        }
+        refresh() {
+            this.tableRow.clearChildren();
+            this.tableRow.setRendered(false);
+            if (this.model_ != null) {
+                for (let i = 0; i < this.model_.getColumnCount(); i++) {
+                    {
+                        const column = this.model_.getColumn(i);
+                        this.addColumn(column);
+                    }
+                    ;
+                }
+            }
+        }
+        getModel() {
+            return this.model_;
+        }
+        setModel(model) {
+            this.model_ = model;
+        }
+        getColumns() {
+            const result = this.tableRow.getChildren();
+            return result;
+        }
     }
-    /**
-     *
-     * @return {string}
-     */
-    getBinding() {
-        return this.getAttribute("binding");
-    }
-    /**
-     *
-     * @param {string} binding
-     * @return {*}
-     */
-    setBinding(binding) {
-        this.setAttribute("binding", binding);
-        return this;
-    }
-    /**
-     *
-     * @param {boolean} b
-     * @return {*}
-     */
-    setRequired(b) {
-        this.required = b;
-        return this;
-    }
-    getUploader() {
-        return this.uploader;
-    }
-    setUploader(uploader) {
-        this.uploader = uploader;
-    }
-    getLabel() {
-        return this.label;
-    }
-    getInput() {
-        return this.input;
-    }
-    isRequired() {
-        return this.required;
-    }
-}
-JSUpload["__class"] = "framework.components.JSUpload";
-JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework.components.api.InputField", "framework.components.api.Renderable", "framework.components.api.TemplateRenderable"];
+    table_2.TableHead = TableHead;
+    TableHead["__class"] = "framework.components.table.TableHead";
+    TableHead["__interfaces"] = ["framework.components.api.Renderable"];
+})(table || (table = {}));
 (function (input) {
-    class JSCheckBox extends input.AbstractJSInput {
+    /**
+     * Creates a new instance of reset button with specified name and text
+     * @param {string} name - name of the reset button
+     * @param {string} text - text inside the reset button
+     * @class
+     * @extends input.JSButton
+     * @author Kureem Rossaye
+     */
+    class JSReset extends input.JSButton {
+        constructor(name, text) {
+            super(name, text);
+            this.setType(api.InputType.RESET);
+        }
+    }
+    input.JSReset = JSReset;
+    JSReset["__class"] = "framework.components.input.JSReset";
+    JSReset["__interfaces"] = ["framework.components.api.Renderable"];
+})(input || (input = {}));
+(function (input) {
+    /**
+     * Instantiate a submit button with specified name and text
+     * @param {string} name - name of button
+     * @param {string} text - text of the button
+     * @class
+     * @extends input.JSButton
+     * @author Kureem Rossaye
+     */
+    class JSSubmit extends input.JSButton {
+        constructor(name, text) {
+            super(name, text);
+            this.setType(api.InputType.SUBMIT);
+        }
+    }
+    input.JSSubmit = JSSubmit;
+    JSSubmit["__class"] = "framework.components.input.JSSubmit";
+    JSSubmit["__interfaces"] = ["framework.components.api.Renderable"];
+})(input || (input = {}));
+(function (input) {
+    class JSCheckBox extends input.JSInput {
         constructor(name) {
             super(name);
-            this.setAttribute("type", "checkbox");
+            this.setAttribute("type", api.InputType["_$wrappers"][api.InputType.CHECKBOX].getValue());
         }
         /**
          *
@@ -4006,6 +4087,9 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
             if (((typeof b === 'boolean') || b === null)) {
                 return this.setValue$java_lang_Boolean(b);
             }
+            else if (((b != null) || b === null)) {
+                super.setValue(b);
+            }
             else
                 throw new Error('invalid overload');
         }
@@ -4021,14 +4105,22 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
     JSCheckBox["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
 (function (input) {
-    class JSDateInput extends input.AbstractJSInput {
+    class JSDateInput extends input.JSInput {
         constructor(name) {
             super(name);
-            this.setType(input.DateInputTypes.date);
+            this.setType(api.InputType.DATE);
             this.addEventListener(new JSDateInput.JSDateInput$0(this), "change");
         }
         setType(type) {
-            this.setAttribute("type", type);
+            if (type != null) {
+                if (api.InputType["_$wrappers"][type].getGroup() !== "date") {
+                    throw Object.defineProperty(new Error("only date types are allowed"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+                }
+                this.setAttribute("type", api.InputType["_$wrappers"][type].getValue());
+            }
+            else {
+                throw Object.defineProperty(new Error("cannot set null value for type attribute"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+            }
             return this;
         }
         /**
@@ -4048,6 +4140,9 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
         setValue(val) {
             if (((val != null && val instanceof Date) || val === null)) {
                 return this.setValue$jsweet_lang_Date(val);
+            }
+            else if (((val != null) || val === null)) {
+                super.setValue(val);
             }
             else
                 throw new Error('invalid overload');
@@ -4081,13 +4176,21 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
     })(JSDateInput = input.JSDateInput || (input.JSDateInput = {}));
 })(input || (input = {}));
 (function (input) {
-    class JSNumberInput extends input.AbstractJSInput {
+    class JSNumberInput extends input.JSInput {
         constructor(name) {
             super(name);
-            this.setAttribute("type", "number");
+            this.setType(api.InputType.NUMBER);
         }
         setType(type) {
-            this.setAttribute("type", type);
+            if (type != null) {
+                if (api.InputType["_$wrappers"][type].getGroup() !== "number") {
+                    throw Object.defineProperty(new Error("only numeric types are allowed"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+                }
+                this.setAttribute("type", api.InputType["_$wrappers"][type].getValue());
+            }
+            else {
+                throw Object.defineProperty(new Error("cannot set null value for type attribute"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+            }
             return this;
         }
         setStep(step) {
@@ -4114,6 +4217,9 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
             if (((typeof val === 'number') || val === null)) {
                 return this.setValue$java_lang_Double(val);
             }
+            else if (((val != null) || val === null)) {
+                super.setValue(val);
+            }
             else
                 throw new Error('invalid overload');
         }
@@ -4129,16 +4235,26 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
     JSNumberInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
 (function (input) {
-    class JSTextInput extends input.AbstractJSInput {
+    class JSTextInput extends input.JSInput {
         constructor(name) {
             super(name);
-            this.setType(api.StringInputTypes.text);
+            this.setType(api.InputType.TEXT);
         }
         setMaxLength(length) {
             this.setAttribute("maxlength", length + "");
         }
         setType(type) {
-            this.setAttribute("type", type);
+            if (type != null) {
+                if (api.InputType["_$wrappers"][type].getGroup() === "text") {
+                    this.setAttribute("type", api.InputType["_$wrappers"][type].getValue());
+                }
+                else {
+                    throw Object.defineProperty(new Error("only text input types can be set as type"), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+                }
+            }
+            else {
+                this.setAttribute("type", null);
+            }
             return this;
         }
         /**
@@ -4159,6 +4275,9 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
             if (((typeof val === 'string') || val === null)) {
                 return this.setValue$java_lang_String(val);
             }
+            else if (((val != null) || val === null)) {
+                super.setValue(val);
+            }
             else
                 throw new Error('invalid overload');
         }
@@ -4175,12 +4294,11 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
     JSTextInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
 (function (input) {
-    class JSTimeInput extends input.AbstractJSInput {
+    class JSTimeInput extends input.JSInput {
         constructor(name) {
             super(name);
             this.savedDate = new Date();
-            this.setAttribute("type", "time");
-            this.setAttribute("identifier", "html:time-input");
+            this.setAttribute("type", api.InputType["_$wrappers"][api.InputType.TIME].getValue());
         }
         /**
          *
@@ -4217,6 +4335,9 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
             if (((val != null && val instanceof Date) || val === null)) {
                 return this.setValue$jsweet_lang_Date(val);
             }
+            else if (((val != null) || val === null)) {
+                super.setValue(val);
+            }
             else
                 throw new Error('invalid overload');
         }
@@ -4226,50 +4347,10 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
     JSTimeInput["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
 (function (input) {
-    class RichTextEditor extends input.JSTextArea {
-        constructor(name) {
-            super(name);
-            this.editor = null;
-            this.setAttribute("identifier", "html:richtext");
-            this.addRenderer(this);
-        }
-        doRender$framework_components_input_RichTextEditor$jsweet_dom_HTMLElement(c, root) {
-            if (this.editor == null) {
-                eval("this.editor = new Simditor({textarea: $(\'#" + this.getId() + "\')});");
-            }
-        }
-        /**
-         *
-         * @param {input.RichTextEditor} c
-         * @param {HTMLElement} root
-         */
-        doRender(c, root) {
-            if (((c != null && c instanceof input.RichTextEditor) || c === null) && ((root != null && root instanceof HTMLElement) || root === null)) {
-                return this.doRender$framework_components_input_RichTextEditor$jsweet_dom_HTMLElement(c, root);
-            }
-            else
-                throw new Error('invalid overload');
-        }
-        /**
-         *
-         * @return {string}
-         */
-        getValue() {
-            if (this.editor != null) {
-                this.editor["saveContent"].call(this.editor);
-            }
-            return super.getValue();
-        }
-    }
-    input.RichTextEditor = RichTextEditor;
-    RichTextEditor["__class"] = "framework.components.input.RichTextEditor";
-    RichTextEditor["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable", "framework.components.api.Renderer"];
-})(input || (input = {}));
-(function (input) {
     class JSRadio extends input.JSCheckBox {
         constructor(name) {
             super(name);
-            this.setAttribute("type", "radio");
+            this.setAttribute("type", api.InputType["_$wrappers"][api.InputType.RADIO].getValue());
         }
     }
     input.JSRadio = JSRadio;
@@ -4277,6 +4358,3 @@ JSUpload["__interfaces"] = ["framework.components.api.EventListener", "framework
     JSRadio["__interfaces"] = ["framework.components.api.InputField", "framework.components.api.Renderable"];
 })(input || (input = {}));
 JSContainer.defaultRenderer_$LI$();
-input.NumericInputTypes.types_$LI$();
-input.DateInputTypes.types_$LI$();
-api.StringInputTypes.types_$LI$();

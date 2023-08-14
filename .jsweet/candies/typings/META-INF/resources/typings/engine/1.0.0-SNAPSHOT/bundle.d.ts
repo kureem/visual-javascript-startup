@@ -1,16 +1,18 @@
 declare namespace api {
     class ContainerRenderer implements api.Renderer<api.Renderable> {
         static timeSpent: number;
+        static getElementById(id: string): HTMLElement;
+        decorate(renderable: api.Renderable): void;
         doRender(c: api.Renderable, root: HTMLElement): void;
         doNothing(r: api.Renderable): void;
-        execCommands(njq: HTMLElement, container: api.Renderable): void;
-        renderEvents(njq: HTMLElement, c: api.Renderable): void;
-        renderAttributes(njq: HTMLElement, c: api.Renderable, changed: boolean): void;
-        clearAttributes(elem: HTMLElement): void;
-        clearStyles(jq: HTMLElement): void;
-        renderStyles(njq: HTMLElement, c: api.Renderable, changed: boolean): void;
-        static setAttribute(element: HTMLElement, attribute: string, value: string): void;
-        static processCSSRules(renderable: api.Renderable, nativeNode: HTMLElement): void;
+        execCommands(njq: Element, container: api.Renderable): void;
+        renderEvents(njq: Element, c: api.Renderable): void;
+        renderAttributes(njq: Element, c: api.Renderable, changed: boolean): void;
+        clearAttributes(elem: Element): void;
+        clearStyles(jq: Element): void;
+        renderStyles(njq: Element, c: api.Renderable, changed: boolean): void;
+        static setAttribute(element: Element, attribute: string, value: string): void;
+        static processCSSRules(renderable: api.Renderable, nativeNode: Element): void;
         constructor();
     }
 }
@@ -31,7 +33,7 @@ declare namespace api {
      * This interface defines methods that allows setting and retrieving values
      * @author Kureem Rossaye
      *
-     * @param <T>
+     * @param <T> - The type of value store by this field
      * @class
      */
     interface InputField<T> extends api.Renderable {
@@ -67,6 +69,45 @@ declare namespace api {
          * @return {*} The new state of this component
          */
         setRequired(b: boolean): InputField<T>;
+    }
+}
+declare namespace api {
+    enum InputType {
+        BUTTON = 0,
+        CHECKBOX = 1,
+        DATE = 2,
+        DATETIME_LOCAL = 3,
+        FILE = 4,
+        HIDDEN = 5,
+        IMAGE = 6,
+        MONTH = 7,
+        NUMBER = 8,
+        RADIO = 9,
+        RANGE = 10,
+        RESET = 11,
+        SUBMIT = 12,
+        TIME = 13,
+        WEEK = 14,
+        TEXT = 15,
+        PASSWORD = 16,
+        EMAIL = 17,
+        URL = 18,
+        SEARCH = 19,
+        TEL = 20,
+        COLOR = 21
+    }
+    /** @ignore */
+    class InputType_$WRAPPER {
+        protected _$ordinal: number;
+        protected _$name: string;
+        value: any;
+        group: any;
+        constructor(_$ordinal: number, _$name: string, value?: any, group?: any);
+        getValue(): string;
+        getGroup(): string;
+        name(): string;
+        ordinal(): number;
+        compareTo(other: any): number;
     }
 }
 declare namespace api {
@@ -431,7 +472,7 @@ declare namespace api {
         flush(secret: string): any;
         /**
          * Add a stylesheet rule to be used with this component
-         * @param {string} rule
+         * @param {string} rule - the css rule to add
          * @return {*} The current renderable
          */
         addCSSRule(rule: string): Renderable;
@@ -440,6 +481,16 @@ declare namespace api {
          * @return {string[]} All stylesheet rules
          */
         getCSSRules(): Array<string>;
+        /**
+         * Sets the {@link HTMLElement} created for this container on the browser when this {@link Renderable} is rendered
+         * @param {HTMLElement} elem - The {@link HTMLElement} that this container represents on the browser
+         */
+        setElement(elem: HTMLElement): any;
+        /**
+         * returns the {@link HTMLElement} that is created for this container on the browser when this {@link Renderable} is rendered
+         * @return {HTMLElement} - The {@link HTMLElement} that this container represents on the browser
+         */
+        getElement(): HTMLElement;
     }
 }
 declare namespace api {
@@ -447,7 +498,7 @@ declare namespace api {
      * Interface to implemented by renderer of components
      * @author Kureem Rossaye
      *
-     * @param <T>
+     * @param <T> - The type of {@link Renderable} that this renderer is compatible with
      * @class
      */
     interface Renderer<T extends api.Renderable> {
@@ -457,19 +508,6 @@ declare namespace api {
          * @param {HTMLElement} parent The parent to which the component is attached
          */
         doRender(renderable: T, parent: HTMLElement): any;
-    }
-}
-declare namespace api {
-    class StringInputTypes {
-        static text: string;
-        static password: string;
-        static email: string;
-        static url: string;
-        static search: string;
-        static tel: string;
-        static color: string;
-        static types: string[];
-        static types_$LI$(): string[];
     }
 }
 declare namespace api {
@@ -502,6 +540,40 @@ declare namespace api {
     }
 }
 declare namespace api {
+    enum Units {
+        PIXEL = 0,
+        CENTIMETER = 1,
+        MILLIMETER = 2,
+        INCH = 3,
+        POINT = 4,
+        PICA = 5,
+        EM = 6,
+        EX = 7,
+        CH = 8,
+        REM = 9,
+        VIEWPORT_WIDTH = 10,
+        VIEWPORT_HEIGHT = 11,
+        VIEWPORT_MIN = 12,
+        VIEWPORT_MAX = 13,
+        PERCENT = 14
+    }
+    /** @ignore */
+    class Units_$WRAPPER {
+        protected _$ordinal: number;
+        protected _$name: string;
+        constructor(_$ordinal: number, _$name: string, name: any, display: any, type: any);
+        __name: any;
+        display: any;
+        type: any;
+        getName(): string;
+        getDisplay(): string;
+        getType(): string;
+        name(): string;
+        ordinal(): number;
+        compareTo(other: any): number;
+    }
+}
+declare namespace api {
     /**
      * Constructs an new {@link ValidationException} with the specified message
      * and code
@@ -515,6 +587,7 @@ declare namespace api {
      * @author Rossaye Abdool Kureem Apr 15, 2018
      */
     class ValidationException extends Error {
+        code: number;
         /**
          * Is a <code>Numeric</code> indicating the user has provided input that the
          * browser is unable to convert.
@@ -568,39 +641,24 @@ declare namespace api {
          */
         static valueMissing: number;
         /**
+         * Is a <code>Numeric</code> indicating the value less than the specified
+         * <code>minlength</code> for {@link JSTextInput}
+         * component.
+         * <em><strong>Note:</strong> This will never be <code>true</code> in Gecko,
+         * because elements' values are prevented from being shorter than
+         * <code>minlength</code>.</em>
+         */
+        static tooShort: number;
+        /**
          *
          */
         static serialVersionUID: number;
         errors: Array<Object>;
         constructor(message?: any, errorCode?: any);
-        static addError(msg: string, code: number, e: ValidationException): void;
-    }
-}
-declare namespace api {
-    interface Validator<T> {
-        validate(source: api.InputField<T>): boolean;
-        getErrorMessage(): string;
-        getSuccessMessage(): string;
-        supports(clazz: any): any;
-    }
-}
-declare class FileUploader {
-}
-declare namespace input {
-    class DateInputTypes {
-        static date: string;
-        static month: string;
-        static week: string;
-        static types: string[];
-        static types_$LI$(): string[];
-    }
-}
-declare namespace input {
-    class NumericInputTypes {
-        static number: string;
-        static range: string;
-        static types: string[];
-        static types_$LI$(): string[];
+        static throwError$java_lang_String$int(msg: string, code: number): void;
+        static throwError$java_lang_String$jsweet_dom_ValidityState(msg: string, state: ValidityState): void;
+        static throwError(msg?: any, state?: any): any;
+        getCode(): number;
     }
 }
 declare namespace table {
@@ -647,12 +705,12 @@ declare namespace table {
          *
          * @param {*} l
          */
-        addTableModelListener(l: table.TableModelListener): void;
+        addTableModelListener(l: table.TableModelEventListener): void;
         /**
          *
          * @param {*} l
          */
-        removeTableModelListener(l: table.TableModelListener): void;
+        removeTableModelListener(l: table.TableModelEventListener): void;
         constructor();
     }
 }
@@ -715,73 +773,11 @@ declare namespace table {
     }
 }
 declare namespace table {
-    class TableColumn {
-        /**
-         * The index of the column in the model which is to be displayed by this
-         * <code>TableColumn</code>. As columns are moved around in the view
-         * <code>modelIndex</code> remains constant.
-         */
-        modelIndex: number;
-        /**
-         * @author Kureem Rossaye<br>
-         * This object is not used internally by the drawing machinery of the
-         * <code>Table</code>; identifiers may be set in the <code>TableColumn</code>
-         * as as an optional way to tag and locate table columns. The table package does
-         * not modify or invoke any methods in these identifier objects other than the
-         * <code>equals</code> method which is used in the <code>getColumnIndex()</code>
-         * method in the <code>DefaultTableColumnModel</code>.
-         */
-        identifier: any;
-        /**
-         * The width of the column.
-         */
-        width: number;
-        /**
-         * The minimum width of the column.
-         */
-        minWidth: number;
-        /**
-         * The maximum width of the column.
-         */
-        maxWidth: number;
-        /**
-         * The renderer used to draw the header of the column.
-         */
-        headerRenderer: table.TableCellRenderer;
-        /**
-         * The header value of the column.
-         */
-        headerValue: any;
-        /**
-         * The renderer used to draw the data cells of the column.
-         */
-        cellRenderer: table.TableCellRenderer;
-        /**
-         * If true, the user is allowed to resize the column; the default is true.
-         */
-        resizable: boolean;
-        getModelIndex(): number;
-        setModelIndex(modelIndex: number): void;
-        getIdentifier(): any;
-        setIdentifier(identifier: any): void;
-        getWidth(): number;
-        setWidth(width: number): void;
-        getMinWidth(): number;
-        setMinWidth(minWidth: number): void;
-        getMaxWidth(): number;
-        setMaxWidth(maxWidth: number): void;
-        getHeaderRenderer(): table.TableCellRenderer;
-        setHeaderRenderer(headerRenderer: table.TableCellRenderer): void;
-        getHeaderValue(): any;
-        setHeaderValue(headerValue: any): void;
-        getCellRenderer(): table.TableCellRenderer;
-        setCellRenderer(cellRenderer: table.TableCellRenderer): void;
-        isResizable(): boolean;
-        setResizable(resizable: boolean): void;
-        constructor();
-    }
-}
-declare namespace table {
+    /**
+     * Contract Interface used by Table to render a <code>TableColumn</code>
+     * @author Kureem Rossaye
+     * @class
+     */
     interface TableColumnModel {
         /**
          * Appends <code>aColumn</code> to the end of the
@@ -908,14 +904,14 @@ declare namespace table {
          *
          * @param   {*} l               the TableModelListener
          */
-        addTableModelListener(l: table.TableModelListener): any;
+        addTableModelListener(l: table.TableModelEventListener): any;
         /**
          * Removes a listener from the list that is notified each time a
          * change to the data model occurs.
          *
          * @param   {*} l               the TableModelListener
          */
-        removeTableModelListener(l: table.TableModelListener): any;
+        removeTableModelListener(l: table.TableModelEventListener): any;
     }
 }
 declare namespace table {
@@ -926,11 +922,11 @@ declare namespace table {
      * specified range of rows are considered changed.
      * <p>
      * The <I>type</I> should be one of: INSERT, UPDATE and DELETE.
-     * @param {*} source
-     * @param {number} firstRow
-     * @param {number} lastRow
-     * @param {number} column
-     * @param {number} type
+     * @param {*} source - The <code>TableModel</code> on which the event has occurred
+     * @param {number} firstRow - The first row in the range of rows affected
+     * @param {number} lastRow - The last row in the range of rows affected
+     * @param {number} column - The column index in which the event occurred
+     * @param {number} type - The type of event occurred
      * @class
      */
     class TableModelEvent {
@@ -963,30 +959,34 @@ declare namespace table {
         /**
          * Returns the first row that changed.  HEADER_ROW means the meta data,
          * ie. names, types and order of the columns.
-         * @return {number}
+         *
+         * @return {number} The first row affected
          */
         getFirstRow(): number;
         /**
+         *
          * Returns the last row that changed.
-         * @return {number}
+         *
+         * @return {number} - The last row affected
          */
         getLastRow(): number;
         /**
          * Returns the column for the event.  If the return
          * value is ALL_COLUMNS; it means every column in the specified
          * rows changed.
-         * @return {number}
+         * @return {number} - The column index affected
          */
         getColumn(): number;
         /**
          * Returns the type of event - one of: INSERT, UPDATE and DELETE.
-         * @return {number}
+         *
+         * @return {number} - The type of event
          */
         getType(): number;
     }
 }
 declare namespace table {
-    interface TableModelListener {
+    interface TableModelEventListener {
         tableChanged(e: table.TableModelEvent): any;
     }
 }
@@ -1040,6 +1040,7 @@ declare class JSContainer implements api.Renderable {
     d: Object;
     static defaultRenderer: api.ContainerRenderer;
     static defaultRenderer_$LI$(): api.ContainerRenderer;
+    elem_: HTMLElement;
     constructor(name?: any, tag?: any);
     /**
      * Adds an event on the component
@@ -1049,7 +1050,7 @@ declare class JSContainer implements api.Renderable {
      * @param {*} listener
      * The javascript function to be called back
      */
-    on(evt: string, listener: EventListener): void;
+    on(evt: string, listener: (p1: api.Renderable, p2: Event) => void): void;
     /**
      *
      * @return {java.lang.String[]} An array of custom events supported by the component<br>
@@ -1277,7 +1278,7 @@ declare class JSContainer implements api.Renderable {
      * Unitility method to check if the specified object is present in the
      * specified array
      *
-     * @param {?[]} lst
+     * @param {Array} lst
      * The array to check if object is present
      * @param {*} o
      * The object to check if present
@@ -1338,6 +1339,16 @@ declare class JSContainer implements api.Renderable {
      * @return {*}
      */
     getUserData(): any;
+    /**
+     *
+     * @param {HTMLElement} elem
+     */
+    setElement(elem: HTMLElement): void;
+    /**
+     *
+     * @return {HTMLElement}
+     */
+    getElement(): HTMLElement;
 }
 declare namespace JSContainer {
     class JSContainer$0 implements api.EventListener {
@@ -1351,9 +1362,6 @@ declare namespace JSContainer {
         performAction(source: api.Renderable, evt: Event): void;
         constructor(__parent: any, listener: any);
     }
-}
-declare class Button extends JSContainer {
-    constructor(name: string, text: string);
 }
 /**
  * Creates a new card layout container
@@ -1431,18 +1439,45 @@ declare class CardLayout extends JSContainer {
     advancedEventTypes(): string[];
     refresh(): void;
 }
+/**
+ * Instantiate a {@link CardLayoutItem} with specified name and tag
+ * @param {string} name - name of item
+ * @param {string} tag - tag of item
+ * @class
+ * @extends JSContainer
+ * @author Kureem Rossaye
+ */
 declare class CardLayoutItem extends JSContainer {
     constructor(name: string, tag: string);
     /**
-     *
+     * returns array of specific supported events
      * @return {java.lang.String[]}
      */
     advancedEventTypes(): string[];
 }
+/**
+ * Instantiate this container with the specified name
+ * @param {string} name - name of container
+ * @class
+ * @extends JSContainer
+ * @author Kureem Rossaye
+ */
 declare class ExternalJavascript extends JSContainer {
     constructor(name: string);
+    /**
+     * Sets the source of the external javascript
+     * @param {string} src - source of file
+     * @return {ExternalJavascript} - this
+     */
     setSource(src: string): ExternalJavascript;
 }
+/**
+ * External this external stylesheet container with the specified name
+ * @param {string} name - the name of the container
+ * @class
+ * @extends JSContainer
+ * @author Kureem Rossaye
+ */
 declare class ExternalStylesheet extends JSContainer implements api.Renderer<ExternalStylesheet> {
     static ORIGIN_ANONYMOUS: string;
     static ORIGIN_USE_CREDENTIALS: string;
@@ -1452,12 +1487,27 @@ declare class ExternalStylesheet extends JSContainer implements api.Renderer<Ext
     static MEDIA_PRINT: string;
     static MEDIA_SPEECH: string;
     constructor(name: string);
+    /**
+     * Sets the source of the external css file and returns the updated instance
+     * @param {string} src - source of external css file
+     * @return {ExternalStylesheet} - updated instance of this
+     */
     setSource(src: string): ExternalStylesheet;
+    /**
+     * Sets the cross origin value of the css file
+     * @param {string} origin - cross origin value
+     * @return {ExternalStylesheet} - updated instance of this
+     */
     setCrossOrigin(origin: string): ExternalStylesheet;
+    /**
+     * Sets the media of the css file
+     * @param {string} media - the media of the css file
+     * @return {ExternalStylesheet} - updated instance of this
+     */
     setMedia(media: string): ExternalStylesheet;
     doRender$framework_components_ExternalStylesheet$jsweet_dom_HTMLElement(c: ExternalStylesheet, root: HTMLElement): void;
     /**
-     *
+     * Rendered used internally which avoids rendering of the css file when the tag is used in our buider.
      * @param {ExternalStylesheet} c
      * @param {HTMLElement} root
      */
@@ -1506,71 +1556,177 @@ declare class HTMLTemplateContainer extends JSContainer implements api.TemplateR
     static invokeFunction(target: Object, _function: string, ...args: any[]): any;
 }
 declare namespace input {
-    abstract class AbstractJSInput<T> extends JSContainer implements api.InputField<T> {
-        validators: Array<api.Validator<T>>;
-        constructor(name: string);
-        addValidator(validator: api.Validator<T>): void;
-        setSize(size: number): void;
-        setPattern(pattern: string): void;
-        setRequired(b: boolean): AbstractJSInput<T>;
-        setDisabled(b: boolean): AbstractJSInput<T>;
-        setReadOnly(b: boolean): AbstractJSInput<T>;
-        toHtmlDateString(date: Date): string;
-        getDoubleValue(): number;
-        getStringValue(): string;
-        getDateValue(): Date;
-        getNativeInput(): HTMLInputElement;
-        setDoubleValue(val: number): void;
-        setStringValue(s: string): void;
-        setDateValue(date: Date): void;
-        getBinding(): string;
-        setPlaceHolder(placeholder: string): AbstractJSInput<T>;
+    /**
+     * Creates a new instance of the button with specified name and text
+     * @param {string} name - name of the button
+     * @param {string} text - text inside the button
+     * @class
+     * @extends JSContainer
+     * @author Kureem Rossaye
+     */
+    class JSButton extends JSContainer {
+        constructor(name: string, text: string);
         /**
-         *
-         * @param {string} msg
-         * The message to add in the validation context
-         * @param {ValidityState} state
-         * The ValidityState returned
-         * @param {api.ValidationException} e
-         * The validation exception to add to error context
-         * @return {api.ValidationException} The current instance of the {@link ValidationException}
+         * Sets the type of the button
+         * @param {api.InputType} type - type of the button. Valid values are: InputType.RESET | InputType.BUTTON | InputType.SUBMIT
+         * @return {input.JSButton} - updated instance of this Button
          */
-        static addError(msg: string, state: ValidityState, e: api.ValidationException): api.ValidationException;
-        /**
-         *
-         */
-        validate(): void;
-        /**
-         *
-         * @return {java.lang.String[]}
-         */
-        advancedEventTypes(): string[];
-        setBinding(binding: string): AbstractJSInput<T>;
-        abstract getValue(): any;
-        abstract setValue(val?: any): any;
+        setType(type: api.InputType): JSButton;
     }
 }
 declare namespace input {
-    class Form extends JSContainer {
+    /**
+     * Creates a new instance of form with the specified name
+     * @param {string} name - The name of the form
+     * @class
+     * @extends JSContainer
+     * @author Kureem Rossaye
+     */
+    class JSForm extends JSContainer {
         validationerrors: Object;
         constructor(name: string);
         /**
-         *
+         * returns an array of advanced specific supported event listener<br>
+         * <ul>
+         * <li>beforeValidate - Fired before validating the form</li>
+         * <li>afterValidate  - Fired after the form is validated </li>
+         * <li>beforeSetData  - Fired before setting data into the input fields of the form</li>
+         * <li>afterSetData   - Fired after setting data  into the input fields of the form</li>
+         * <li>beforeGetData  - Fired before retrieving data from the input fields of the form</li>
+         * <li>afterGetData   - Fired after  retrieving data from the input fields of the form</li>
+         * <li>onError        - Fired if there is one or more errors after validating the form</li>
+         * <li>beforeSubmit   - Fired before submitting the form</li>
+         * <li>afterSubmit    - Fired after submitting the form even if the form is not valid</li>
+         * <li>onSubmit         - Fired on submitting the form and if there is no error after validation</li>
+         * <li>onReset          - Fired when the form is reset</li>
+         * </ul>
          * @return {java.lang.String[]}
          */
         advancedEventTypes(): string[];
+        /**
+         * Return whether the form is valid of not after validating it.<br> If the form has not been validated yet,
+         * this method will return true
+         * @return {boolean} - Whether the form is valid or not
+         */
         isValid(): boolean;
+        /**
+         * Returns whether this form has errors or not after validating it<br> If the form has not been validated yet,
+         * this method will return false
+         * @return {boolean} - Whether this form has errors or not
+         */
         hasErrors(): boolean;
+        /**
+         *
+         * @param {string} binding - The name or binding of the input element in the form
+         * @return {api.ValidationException} - The validation exception if any for the specified binding of the form element
+         */
         getError(binding: string): api.ValidationException;
+        /**
+         *
+         * @return {Object} - All errors found after validating this form
+         */
         getErrors(): Object;
+        /**
+         *
+         * @param {string} binding - The binding or name of the input field to search for
+         * @return {*} - The input field having specified name or binding
+         */
         getField(binding: string): api.InputField<any>;
+        /**
+         * Validates all fields in this form and returns whether there is any error in the form<br>
+         * The following chain of event will be fired when this method is called:<br>
+         * <ul>
+         * <li>beforeValidate</li>
+         * <li>onError - only if there is any error in the form</li>
+         * <li>afterValidate</li>
+         * </ul>
+         * @return {boolean} - Whether there is any error in the form
+         */
         validate(): boolean;
+        /**
+         * Injects data into the fields of the form.<br>
+         * each property of the form should be the binding of the input field<br>
+         * If for a field in the form, corresponding property is not found in the specified data,
+         * the field will be cleared and its value set to null<br>
+         * The following chain of event is fired when this method is called:<br>
+         * <ul>
+         * <li>beforeSetData</li>
+         * <li>afterSetData</li>
+         * </ul>
+         *
+         * @param {Object} data - The data to inject into the form
+         */
         setData(data: Object): void;
+        /**
+         * Retrieves data from all the fields in this form<br>
+         * The following chain of event is fired when this method is called:<br>
+         * <ul>
+         * <li>beforeGetData</li>
+         * <li>afterGetData</li>
+         * </ul>
+         * @return {Object} - The data from all the fields in the form
+         */
         getData(): Object;
+        /**
+         * Resets the form by clearing all the fields in the form<br>
+         * This method is called automatically when the form is reset for example by clicking an input of type reset present in the form<br>
+         * or by resetting it using javascript means.<br>
+         * The onReset event is fired when this method is called
+         *
+         */
+        reset(): void;
+        /**
+         * Submits the form.<br>
+         * This method is called automatically when the form is submitted for example by clicking an input of type submit present
+         * in the form or by submitting the form using javascript.<br>
+         * When this method is called, the form is validated, then the getData method is called.<br>
+         * The following chain of event is fired when this method is called
+         * <ul>
+         * <li>beforeSubmit event is fired</li>
+         * <li>
+         * validate method is called
+         * <ul>
+         * <li>beforeValidate event is fired</li>
+         * <li>onError event is fired only if there is any error in the form</li>
+         * <li>afterValidate event is fired</li>
+         * </ul>
+         * </li>
+         * <li>
+         * if form is valid, getData method is called
+         * <ul>
+         * <li>beforeGetData event is fired</li>
+         * <li>afterGetData event is fired</li>
+         * </ul>
+         * </li>
+         * <li>if form is valid onSubmit event is fired</li>
+         * <li>Whether or not form is valid, afterSubmit event is fired</li>
+         * </ul>
+         *
+         */
         submit(): void;
     }
-    namespace Form {
-        class Form$0 implements util.ComponentUtil.ComponentVisitor {
+    namespace JSForm {
+        class JSForm$0 implements api.EventListener {
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any);
+        }
+        class JSForm$1 implements api.EventListener {
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any);
+        }
+        class JSForm$2 implements util.ComponentUtil.ComponentVisitor {
             private binding;
             private result;
             __parent: any;
@@ -1581,7 +1737,7 @@ declare namespace input {
             doVisit(designable: api.Renderable): void;
             constructor(__parent: any, binding: any, result: any);
         }
-        class Form$1 implements util.ComponentUtil.ComponentVisitor {
+        class JSForm$3 implements util.ComponentUtil.ComponentVisitor {
             __parent: any;
             /**
              *
@@ -1590,7 +1746,7 @@ declare namespace input {
             doVisit(designable: api.Renderable): void;
             constructor(__parent: any);
         }
-        class Form$2 implements util.ComponentUtil.ComponentVisitor {
+        class JSForm$4 implements util.ComponentUtil.ComponentVisitor {
             private data;
             __parent: any;
             /**
@@ -1600,7 +1756,7 @@ declare namespace input {
             doVisit(designable: api.Renderable): void;
             constructor(__parent: any, data: any);
         }
-        class Form$3 implements util.ComponentUtil.ComponentVisitor {
+        class JSForm$5 implements util.ComponentUtil.ComponentVisitor {
             private data;
             __parent: any;
             /**
@@ -1613,100 +1769,93 @@ declare namespace input {
     }
 }
 declare namespace input {
-    class JSImageInput extends JSContainer implements api.InputField<string> {
-        image: JSContainer;
-        upload: JSUpload;
-        imageContainer: JSContainer;
-        validators: Array<api.Validator<string>>;
+    class JSInput<T> extends JSContainer implements api.InputField<T> {
         constructor(name: string);
-        refreshUploadDir(): void;
-        getImage(): JSContainer;
-        setRequired(b: boolean): JSImageInput;
-        setDisabled(b: boolean): JSImageInput;
-        setReadOnly(b: boolean): JSImageInput;
-        decorateImage(): void;
-        /**
-         *
-         * @return {string}
-         */
-        getValue(): string;
-        setValue$java_lang_String(val: string): void;
-        /**
-         *
-         * @param {string} val
-         */
-        setValue(val?: any): any;
+        setSize(size: number): void;
+        setPattern(pattern: string): void;
+        setRequired(b: boolean): JSInput<T>;
+        setDisabled(b: boolean): JSInput<T>;
+        setReadOnly(b: boolean): JSInput<T>;
+        toHtmlDateString(date: Date): string;
+        getDoubleValue(): number;
+        getStringValue(): string;
+        getDateValue(): Date;
+        getNativeInput(): HTMLInputElement;
+        setDoubleValue(val: number): void;
+        setStringValue(s: string): void;
+        setDateValue(date: Date): void;
+        getBinding(): string;
+        setPlaceHolder(placeholder: string): JSInput<T>;
         /**
          *
          */
         validate(): void;
         /**
          *
-         * @return {string}
-         */
-        getBinding(): string;
-        /**
-         *
-         * @param {string} binding
-         * @return {*}
-         */
-        setBinding(binding: string): api.InputField<string>;
-        /**
-         *
          * @return {java.lang.String[]}
          */
         advancedEventTypes(): string[];
-    }
-    namespace JSImageInput {
-        class JSImageInput$0 implements api.EventListener {
-            __parent: any;
-            /**
-             *
-             * @param {*} source
-             * @param {Event} evt
-             */
-            performAction(source: api.Renderable, evt: Event): void;
-            constructor(__parent: any);
-        }
-        class JSImageInput$1 implements api.EventListener {
-            __parent: any;
-            /**
-             *
-             * @param {*} source
-             * @param {Event} evt
-             */
-            performAction(source: api.Renderable, evt: Event): void;
-            constructor(__parent: any);
-        }
-        class JSImageInput$2 implements api.EventListener {
-            __parent: any;
-            /**
-             *
-             * @param {*} source
-             * @param {Event} evt
-             */
-            performAction(source: api.Renderable, evt: Event): void;
-            constructor(__parent: any);
-        }
+        setBinding(binding: string): JSInput<T>;
+        /**
+         *
+         * @return {*}
+         */
+        getValue(): T;
+        /**
+         *
+         * @param {*} val
+         */
+        setValue(val: T): void;
     }
 }
 declare namespace input {
+    /**
+     * Creates a new instance of {@link JSOption} with the specified text and value
+     * @param {string} text - The text to display for the option
+     * @param {string} value - the value of the option
+     * @class
+     * @extends JSContainer
+     * @author Kureem Rossaye
+     */
     class JSOption extends JSContainer {
         constructor(text: string, value: string);
+        /**
+         * The value of the option
+         * @return {string} - The value of the option
+         */
         getValue(): string;
+        /**
+         * Sets the value of the option
+         * @param {string} value - The value of the option
+         */
         setValue(value: string): void;
+        /**
+         *
+         * @return {string} - The text of the option
+         */
         getText(): string;
-        setText(label: string): void;
+        /**
+         * Sets the text or label of the option
+         * @param {string} text - The text of the option
+         */
+        setText(text: string): void;
+        /**
+         * Mark or unmark this option as selected
+         * @param {boolean} b - Whether to select or not select this option
+         */
         setSelected(b: boolean): void;
+        /**
+         *
+         * @return {boolean} - Whether this option is selected or not
+         */
+        isSelected(): boolean;
     }
 }
 declare namespace input {
     class JSSelect extends JSContainer implements api.InputField<any> {
         previousValue: string;
-        validators: Array<api.Validator<any>>;
         data: Array<Object>;
         constructor(name: string);
-        addValidator(validator: api.Validator<any>): void;
         setOptions$java_lang_String(options: string): JSSelect;
         setOptions(options?: any): any;
         addOption$framework_components_input_JSOption(option: input.JSOption): JSSelect;
@@ -1762,9 +1911,7 @@ declare namespace input {
 }
 declare namespace input {
     class JSTextArea extends JSContainer implements api.InputField<string> {
-        validators: Array<api.Validator<string>>;
         constructor(name: string);
-        addValidator(validator: api.Validator<string>): void;
         setRequired(b: boolean): JSTextArea;
         setDisabled(b: boolean): JSTextArea;
         /**
@@ -1797,20 +1944,22 @@ declare namespace input {
         setBinding(binding: string): api.InputField<string>;
     }
 }
-declare class RestWebservice extends JSContainer {
-    constructor(name?: any);
-}
-declare class Row extends JSContainer {
-    constructor(name: string);
-}
 declare namespace table {
+    /**
+     * Renders a table
+     *
+     * @author Kureem Rossaye
+     * @param {string} name
+     * @class
+     * @extends JSContainer
+     */
     class Table extends JSContainer {
-        head: JSContainer;
-        body: JSContainer;
-        dataModel: table.TableModel;
-        columnModel: table.TableColumnModel;
+        head: table.TableHead;
+        body: table.TableBody;
         constructor(name: string);
-        getHead(): api.Renderable;
+        fireOnClickRow(row: api.Renderable, rowIndex: number): void;
+        fireOnDblClickRow(row: api.Renderable, rowIndex: number): void;
+        getHead(): table.TableHead;
         getBody(): api.Renderable;
         getDataModel(): table.TableModel;
         setDataModel(dataModel: table.TableModel): void;
@@ -1819,141 +1968,140 @@ declare namespace table {
         refresh(): void;
     }
 }
-declare namespace input {
-    class JSAddressInput extends HTMLTemplateContainer implements api.InputField<Object> {
-        address: Object;
-        country: input.JSSelect;
-        city: input.JSTextInput;
-        postalCode: input.JSTextInput;
-        state: input.JSTextInput;
-        street: input.JSTextInput;
-        constructor(name: string);
-        getAddress(): Object;
-        setAddress(address: Object): void;
+declare namespace table {
+    class TableBody extends JSContainer implements api.EventListener {
+        table: table.Table;
+        model: table.TableModel;
+        constructor(name: string, table: table.Table);
+        getModel(): table.TableModel;
+        setModel(model: table.TableModel): void;
+        getTable(): table.Table;
+        refresh(): void;
         /**
          *
-         * @return {Object}
+         * @param {*} source
+         * @param {Event} evt
          */
-        getValue(): Object;
-        setValue$jsweet_lang_Object(val: Object): void;
-        /**
-         *
-         * @param {Object} val
-         */
-        setValue(val?: any): any;
-        /**
-         *
-         */
-        validate(): void;
-        /**
-         *
-         * @return {string}
-         */
-        getBinding(): string;
-        /**
-         *
-         * @param {string} binding
-         * @return {*}
-         */
-        setBinding(binding: string): api.InputField<Object>;
-        /**
-         *
-         * @param {boolean} b
-         * @return {*}
-         */
-        setRequired(b: boolean): api.InputField<Object>;
+        performAction(source: api.Renderable, evt: Event): void;
+    }
+    namespace TableBody {
+        class TableBody$0 implements api.EventListener {
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any);
+        }
     }
 }
-/**
- * Create a new instance of this component
- * @param {string} name The name of the component
- * @param {string} url The url where to submit uploaded file
- * @param {string} template
- * @class
- * @extends HTMLTemplateContainer
- * @author Rossaye Abdool Kureem
- */
-declare class JSUpload extends HTMLTemplateContainer implements api.EventListener, api.InputField<Object> {
-    label: JSContainer;
-    input: JSContainer;
-    uploader: FileUploader;
-    required: boolean;
-    constructor(name?: any, template?: any, url?: any);
+declare namespace table {
     /**
-     * Manually opens native dialog box to select file to upload
+     * Hold all the information for the definition of a column in a <code>Table</code>
+     * @author Kureem Rossaye
+     * @param {string} name
+     * @class
+     * @extends JSContainer
      */
-    triggerUpload(): void;
-    /**
-     *
-     * @return {java.lang.String[]}
-     */
-    advancedEventTypes(): string[];
-    /**
-     * Sets a label to this component
-     * @param {string} label The label of the component
-     */
-    setLabel(label: string): void;
-    /**
-     * Sets the accepts mimetypes for this component
-     * @param {string} accepts Mime types allowed to upload (e.g image/jpg, image/png, text/html etc)
-     */
-    setAccepts(accepts: string): void;
-    /**
-     *
-     * @param {*} source
-     * @param {Event} ev
-     */
-    performAction(source: api.Renderable, ev: Event): void;
-    /**
-     * Sets the server url where to submit file to uplaod
-     * @param {string} url Url where to submit file to upload
-     */
-    setUrl(url: string): void;
-    /**
-     * Synonymous to setUrl
-     * @param {string} url The url where to submit file to upload
-     */
-    setEndpoint(url: string): void;
-    /**
-     *
-     * @return {Object}
-     */
-    getValue(): Object;
-    setValue$jsweet_lang_Object(val: Object): void;
-    /**
-     *
-     * @param {Object} val
-     */
-    setValue(val?: any): any;
-    /**
-     *
-     */
-    validate(): void;
-    /**
-     *
-     * @return {string}
-     */
-    getBinding(): string;
-    /**
-     *
-     * @param {string} binding
-     * @return {*}
-     */
-    setBinding(binding: string): api.InputField<Object>;
-    /**
-     *
-     * @param {boolean} b
-     * @return {*}
-     */
-    setRequired(b: boolean): api.InputField<Object>;
-    getUploader(): FileUploader;
-    setUploader(uploader: FileUploader): void;
-    getLabel(): JSContainer;
-    getInput(): JSContainer;
-    isRequired(): boolean;
+    class TableColumn extends JSContainer {
+        constructor(name: string);
+        /**
+         * The index of the column in the model which is to be displayed by this
+         * <code>TableColumn</code>. As columns are moved around in the view
+         * <code>modelIndex</code> remains constant.
+         */
+        modelIndex: number;
+        /**
+         * @author Kureem Rossaye<br>
+         * This object is not used internally by the drawing machinery of the
+         * <code>Table</code>; identifiers may be set in the <code>TableColumn</code>
+         * as as an optional way to tag and locate table columns. The table package does
+         * not modify or invoke any methods in these identifier objects other than the
+         * <code>equals</code> method which is used in the <code>getColumnIndex()</code>
+         * method in the <code>DefaultTableColumnModel</code>.
+         */
+        identifier: any;
+        /**
+         * The renderer used to draw the header of the column.
+         */
+        headerRenderer: table.TableCellRenderer;
+        /**
+         * The header value of the column.
+         */
+        headerValue: any;
+        /**
+         * The renderer used to draw the data cells of the column.
+         */
+        cellRenderer: table.TableCellRenderer;
+        /**
+         * If true, the user is allowed to resize the column; the default is true.
+         */
+        resizable: boolean;
+        getModelIndex(): number;
+        setModelIndex(modelIndex: number): void;
+        getIdentifier(): any;
+        setIdentifier(identifier: any): void;
+        getWidth(): number;
+        setDimensionStyle(name: string, value: number): void;
+        getDimensionStyle(name: string): number;
+        setWidth(width: number): void;
+        getMinWidth(): number;
+        setMinWidth(minWidth: number): void;
+        getMaxWidth(): number;
+        setMaxWidth(maxWidth: number): void;
+        getHeaderRenderer(): table.TableCellRenderer;
+        setHeaderRenderer(headerRenderer: table.TableCellRenderer): void;
+        getHeaderValue(): any;
+        setHeaderValue(headerValue: any): void;
+        getCellRenderer(): table.TableCellRenderer;
+        setCellRenderer(cellRenderer: table.TableCellRenderer): void;
+        isResizable(): boolean;
+        setResizable(resizable: boolean): void;
+    }
+}
+declare namespace table {
+    class TableHead extends JSContainer {
+        tableRow: JSContainer;
+        table: table.Table;
+        model_: table.TableColumnModel;
+        constructor(name: string, table: table.Table);
+        addColumn(column: table.TableColumn): TableHead;
+        refresh(): void;
+        getModel(): table.TableColumnModel;
+        setModel(model: table.TableColumnModel): void;
+        getColumns(): Array<table.TableColumn>;
+    }
 }
 declare namespace input {
-    class JSCheckBox extends input.AbstractJSInput<boolean> {
+    /**
+     * Creates a new instance of reset button with specified name and text
+     * @param {string} name - name of the reset button
+     * @param {string} text - text inside the reset button
+     * @class
+     * @extends input.JSButton
+     * @author Kureem Rossaye
+     */
+    class JSReset extends input.JSButton {
+        constructor(name: string, text: string);
+    }
+}
+declare namespace input {
+    /**
+     * Instantiate a submit button with specified name and text
+     * @param {string} name - name of button
+     * @param {string} text - text of the button
+     * @class
+     * @extends input.JSButton
+     * @author Kureem Rossaye
+     */
+    class JSSubmit extends input.JSButton {
+        constructor(name: string, text: string);
+    }
+}
+declare namespace input {
+    class JSCheckBox extends input.JSInput<boolean> {
         constructor(name: string);
         /**
          *
@@ -1971,9 +2119,9 @@ declare namespace input {
     }
 }
 declare namespace input {
-    class JSDateInput extends input.AbstractJSInput<Date> {
+    class JSDateInput extends input.JSInput<Date> {
         constructor(name: string);
-        setType(type: string): JSDateInput;
+        setType(type: api.InputType): JSDateInput;
         /**
          *
          * @return {Date}
@@ -2002,9 +2150,9 @@ declare namespace input {
     }
 }
 declare namespace input {
-    class JSNumberInput extends input.AbstractJSInput<number> {
+    class JSNumberInput extends input.JSInput<number> {
         constructor(name: string);
-        setType(type: string): JSNumberInput;
+        setType(type: api.InputType): JSNumberInput;
         setStep(step: number): void;
         getStep(): number;
         /**
@@ -2023,10 +2171,10 @@ declare namespace input {
     }
 }
 declare namespace input {
-    class JSTextInput extends input.AbstractJSInput<string> {
+    class JSTextInput extends input.JSInput<string> {
         constructor(name: string);
         setMaxLength(length: number): void;
-        setType(type: string): JSTextInput;
+        setType(type: api.InputType): JSTextInput;
         /**
          *
          * @return {string}
@@ -2043,7 +2191,7 @@ declare namespace input {
     }
 }
 declare namespace input {
-    class JSTimeInput extends input.AbstractJSInput<Date> {
+    class JSTimeInput extends input.JSInput<Date> {
         savedDate: Date;
         constructor(name: string);
         /**
@@ -2057,24 +2205,6 @@ declare namespace input {
          * @param {Date} val
          */
         setValue(val?: any): any;
-    }
-}
-declare namespace input {
-    class RichTextEditor extends input.JSTextArea implements api.Renderer<RichTextEditor> {
-        editor: Object;
-        constructor(name: string);
-        doRender$framework_components_input_RichTextEditor$jsweet_dom_HTMLElement(c: RichTextEditor, root: HTMLElement): void;
-        /**
-         *
-         * @param {input.RichTextEditor} c
-         * @param {HTMLElement} root
-         */
-        doRender(c?: any, root?: any): any;
-        /**
-         *
-         * @return {string}
-         */
-        getValue(): string;
     }
 }
 declare namespace input {

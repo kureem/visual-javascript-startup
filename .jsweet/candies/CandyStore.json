@@ -2,15 +2,14 @@
   "candies": [
     {
       "name": "engine",
-      "version": "1.0.0-SNAPSHOT",
-      "lastUpdateTimestamp": 1632030058000,
+      "version": "1.0.2-SNAPSHOT",
+      "lastUpdateTimestamp": 1674048398000,
       "modelVersion": "unknown",
       "transpilerVersion": "3.0.0",
       "jsOutputDirPath": "C:\\gitvjs\\visual-javascript-startup\\.jsweet\\candies\\js",
-      "jsDirPath": "META-INF/resources/webjars/engine/1.0.0-SNAPSHOT",
+      "jsDirPath": "META-INF/resources/webjars/engine/1.0.2-SNAPSHOT",
       "jsFilesPaths": [
-        "META-INF/resources/webjars/engine/1.0.0-SNAPSHOT/bundle.js",
-        "META-INF/resources/webjars/engine/1.0.0-SNAPSHOT/data.js"
+        "META-INF/resources/webjars/engine/1.0.2-SNAPSHOT/bundle.js"
       ]
     },
     {

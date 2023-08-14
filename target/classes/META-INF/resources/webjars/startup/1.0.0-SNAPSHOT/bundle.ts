@@ -12,14 +12,120 @@ namespace com.mycompany.ui {
 
 }
 namespace com.mycompany.ui {
+    export class CardLayoutExample extends JSContainer {
+        /*private*/ layout: CardLayout;
+
+        /*private*/ item1: CardLayoutItem;
+
+        /*private*/ item2: CardLayoutItem;
+
+        /*private*/ item3: CardLayoutItem;
+
+        /*private*/ testInvalid: boolean;
+
+        public constructor() {
+            super("layout example", "div");
+            this.layout = new CardLayout("layout", "div");
+            this.item1 = new CardLayoutItem("item1", "div");
+            this.item2 = new CardLayoutItem("item2", "div");
+            this.item3 = new CardLayoutItem("item3", "div");
+            this.testInvalid = false;
+            this.item1.addChild(new JSContainer("h1").setHtml("Card Layout Item 1"));
+            this.item2.addChild(new JSContainer("h1").setHtml("Card Layout Item 2"));
+            this.item3.addChild(new JSContainer("h1").setHtml("Card Layout Item 3"));
+            this.layout.addItem(this.item1).addItem(this.item2).addItem(this.item3);
+            const onActivate: api.EventListener = new CardLayoutExample.CardLayoutExample$0(this);
+            const onDeactivate: api.EventListener = new CardLayoutExample.CardLayoutExample$1(this);
+            const onValidate: api.EventListener = new CardLayoutExample.CardLayoutExample$2(this);
+            this.item1.addEventListener(onActivate, "activate").addEventListener(onDeactivate, "deactivate");
+            this.item2.addEventListener(onActivate, "activate").addEventListener(onDeactivate, "deactivate");
+            this.item3.addEventListener(onActivate, "activate").addEventListener(onDeactivate, "deactivate");
+        }
+    }
+    CardLayoutExample["__class"] = "com.mycompany.ui.CardLayoutExample";
+    CardLayoutExample["__interfaces"] = ["framework.components.api.Renderable"];
+
+
+
+    export namespace CardLayoutExample {
+
+        export class CardLayoutExample$0 implements api.EventListener {
+            public __parent: any;
+            /**
+             * 
+             * @param {*} source
+             * @param {Event} evt
+             */
+            public performAction(source: api.Renderable, evt: Event) {
+                source.addChild(new JSContainer("h3").setHtml(source.getName() + " is activated"));
+            }
+
+            constructor(__parent: any) {
+                this.__parent = __parent;
+            }
+        }
+        CardLayoutExample$0["__interfaces"] = ["framework.components.api.EventListener"];
+
+
+
+        export class CardLayoutExample$1 implements api.EventListener {
+            public __parent: any;
+            /**
+             * 
+             * @param {*} source
+             * @param {Event} evt
+             */
+            public performAction(source: api.Renderable, evt: Event) {
+                source.addChild(new JSContainer("h3").setHtml(source.getName() + " was deactivated"));
+            }
+
+            constructor(__parent: any) {
+                this.__parent = __parent;
+            }
+        }
+        CardLayoutExample$1["__interfaces"] = ["framework.components.api.EventListener"];
+
+
+
+        export class CardLayoutExample$2 implements api.EventListener {
+            public __parent: any;
+            /**
+             * 
+             * @param {*} source
+             * @param {Event} evt
+             */
+            public performAction(source: api.Renderable, evt: Event) {
+                if (this.__parent.testInvalid){
+                    evt["valid"] = false;
+                }
+            }
+
+            constructor(__parent: any) {
+                this.__parent = __parent;
+            }
+        }
+        CardLayoutExample$2["__interfaces"] = ["framework.components.api.EventListener"];
+
+
+    }
+
+}
+namespace com.mycompany.ui {
+    /**
+     * 
+     * Simple class that extends JSContainer with tag div
+     * @class
+     * @extends JSContainer
+     */
     export class Example_0 extends JSContainer {
         public constructor() {
             super("div");
             const h1: JSContainer = new JSContainer("h1");
             h1.setHtml("Hello World!");
             this.addChild(h1);
-            const btn: Button = new Button("button", "Click Me");
+            const btn: input.JSButton = new input.JSButton("button", "Click Me");
             btn.addEventListener(new Example_0.Example_0$0(this, h1), "click");
+            btn.addEventListener(new Example_0.Example_0$1(this, h1), "dblclick");
             this.addChild(btn);
         }
     }
@@ -48,6 +154,25 @@ namespace com.mycompany.ui {
         Example_0$0["__interfaces"] = ["framework.components.api.EventListener"];
 
 
+
+        export class Example_0$1 implements api.EventListener {
+            public __parent: any;
+            /**
+             * 
+             * @param {*} source
+             * @param {Event} evt
+             */
+            public performAction(source: api.Renderable, evt: Event) {
+                this.h1.setHtml("dbl click!!");
+            }
+
+            constructor(__parent: any, private h1: any) {
+                this.__parent = __parent;
+            }
+        }
+        Example_0$1["__interfaces"] = ["framework.components.api.EventListener"];
+
+
     }
 
 }
@@ -61,10 +186,10 @@ namespace com.mycompany.ui {
             this.addChild(cardLayout);
             const buttons: JSContainer = new JSContainer("div");
             this.addChild(buttons);
-            const first: Button = new Button("first", "<<");
-            const previous: Button = new Button("previous", "<");
-            const next: Button = new Button("next", ">");
-            const last: Button = new Button("last", ">>");
+            const first: input.JSButton = new input.JSButton("first", "<<");
+            const previous: input.JSButton = new input.JSButton("previous", "<");
+            const next: input.JSButton = new input.JSButton("next", ">");
+            const last: input.JSButton = new input.JSButton("last", ">>");
             buttons.addChild(first).addChild(previous).addChild(next).addChild(last);
             first.addEventListener(new Example_1.Example_1$0(this, cardLayout), "click");
             previous.addEventListener(new Example_1.Example_1$1(this, cardLayout), "click");

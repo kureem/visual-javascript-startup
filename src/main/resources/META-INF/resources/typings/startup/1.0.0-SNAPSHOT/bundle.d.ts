@@ -4,6 +4,48 @@ declare namespace com.mycompany.ui {
     }
 }
 declare namespace com.mycompany.ui {
+    class CardLayoutExample extends JSContainer {
+        layout: CardLayout;
+        item1: CardLayoutItem;
+        item2: CardLayoutItem;
+        item3: CardLayoutItem;
+        testInvalid: boolean;
+        constructor();
+    }
+    namespace CardLayoutExample {
+        class CardLayoutExample$0 implements api.EventListener {
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any);
+        }
+        class CardLayoutExample$1 implements api.EventListener {
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any);
+        }
+        class CardLayoutExample$2 implements api.EventListener {
+            __parent: any;
+            /**
+             *
+             * @param {*} source
+             * @param {Event} evt
+             */
+            performAction(source: api.Renderable, evt: Event): void;
+            constructor(__parent: any);
+        }
+    }
+}
+declare namespace com.mycompany.ui {
     /**
      *
      * Simple class that extends JSContainer with tag div
